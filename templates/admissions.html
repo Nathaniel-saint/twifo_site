@@ -1,21 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section style="max-width: 600px; margin: 0 auto; box-sizing: border-box;">
+<section style="padding: 40px; max-width: 600px; margin: 0 auto; box-sizing: border-box;">
     <h2>Apply Now</h2>
-    <p>Fill out the form below to begin the admission process.</p>
+    <p>Fill out the form below to begin the admission process at Twifo Hemang Shalom School.</p>
 
-    <form action="#" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-        <label>First Name:</label>
-        <input type="text" name="firstname" required style="padding: 8px;">
+    {% if success %}
+    <div style="background-color: #d1e7dd; color: #0f5132; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #badbcc; font-weight: bold;">
+        ✓ Your application has been securely submitted! Our admissions office will review your details shortly.
+    </div>
+    {% endif %}
 
-        <label>Last Name:</label>
-        <input type="text" name="lastname" required style="padding: 8px;">
+    <form action="/admissions" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        <label style="font-weight: bold; color: var(--color-blue);">First Name:</label>
+        <input type="text" name="firstname" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
 
-        <label>Email Address:</label>
-        <input type="email" name="email" required style="padding: 8px;">
+        <label style="font-weight: bold; color: var(--color-blue);">Last Name:</label>
+        <input type="text" name="lastname" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
 
-        <button type="submit" class="btn-primary" style="padding: 12px;">SUBMIT APPLICATION</button>
+        <label style="font-weight: bold; color: var(--color-blue);">Email Address:</label>
+        <input type="email" name="email" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+
+        <button type="submit" class="btn-primary" style="padding: 12px; font-weight: bold; border: none; cursor: pointer; border-radius: 4px; margin-top: 10px;">
+            SUBMIT APPLICATION
+        </button>
     </form>
 </section>
 {% endblock %}

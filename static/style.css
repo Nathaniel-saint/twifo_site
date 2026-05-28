@@ -252,6 +252,223 @@ header nav a.active-link::after {
     opacity: 0; /* Starts invisible */
 }
 
+
+/* ==========================================
+   INTERACTIVE LIVE CHAT STYLING 
+   ========================================== */
+
+/* Overriding the default floating widget slightly to support an icon alignment */
+.chat-widget {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: var(--color-gold);
+    padding: 12px 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+/* Main Hidden Chat Box Frame */
+.chat-box-container {
+    position: fixed;
+    bottom: 85px;
+    right: 25px;
+    width: 320px;
+    height: 420px;
+    background-color: var(--color-white);
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    display: none; /* Kept hidden until 'active' class toggles */
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1001;
+    border: 1px solid #e2e8f0;
+}
+
+/* Becomes visible via JS class injection */
+.chat-box-container.active {
+    display: flex;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Header UI Block */
+.chat-header {
+    background-color: var(--color-blue);
+    color: var(--color-white);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bot-status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e; /* Green online marker */
+    border-radius: 50%;
+}
+
+.chat-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.chat-close-btn:hover { opacity: 1; }
+
+/* Message View Port Container */
+.chat-messages-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Chat Bubbles Layout */
+.message {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.bot-msg {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+}
+
+.user-msg {
+    background-color: var(--color-blue);
+    color: var(--color-white);
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+}
+
+/* Bottom Input Interface Banner */
+.chat-input-area {
+    display: flex;
+    border-top: 1px solid #e2e8f0;
+    padding: 10px;
+    background-color: white;
+}
+
+#chatInput {
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    outline: none;
+}
+#chatInput:focus {
+    border-color: var(--color-blue);
+}
+
+#chatSendBtn {
+    background-color: var(--color-blue);
+    color: white;
+    border: none;
+    padding: 0 15px;
+    margin-left: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+#chatSendBtn:hover {
+    background-color: #24437e;
+}
+
+/* Tweak Mobile View slightly to sit elegantly over content screen widths */
+@media (max-width: 480px) {
+    .chat-box-container {
+        width: calc(100% - 40px);
+        right: 20px;
+        bottom: 80px;
+        height: 380px;
+    }
+}
+
+/* ==========================================
+   ACADEMICS ACCORDION STYLING 
+   ========================================== */
+
+.accordion-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    background-color: var(--color-white);
+}
+
+.accordion-trigger {
+    width: 100%;
+    background-color: #f8fafc;
+    border: none;
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: var(--color-blue);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.accordion-trigger:hover {
+    background-color: var(--color-blue);
+    color: var(--color-white);
+}
+
+.accordion-icon {
+    font-size: 1.3rem;
+    font-weight: normal;
+}
+
+/* Smooth hidden drawer logic */
+.accordion-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+    background-color: #ffffff;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.accordion-panel p {
+    margin: 15px 0;
+    line-height: 1.6;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+/* Class added via JS toggling */
+.accordion-panel.open {
+    max-height: 200px; /* High enough threshold value to completely reveal content safely */
+    padding: 5px 20px 15px 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+
 /* ==========================================
    RESPONSIVENESS & MOBILE OVERRIDES 
    ========================================== */

@@ -18,6 +18,7 @@
             <a href="/">HOME</a>
             <a href="/about">ABOUT</a>
             <a href="/admissions">ADMISSIONS</a>
+            <a href="/academics">ACADEMICS</a>
             <a href="/alumni">ALUMNI</a>
         </nav>
     </header>
@@ -27,9 +28,99 @@
         {% endblock %}
     </main>
 
-    <div class="chat-widget">
-        <strong style="color: var(--color-blue);">Chat</strong>
+    <div class="chat-widget" onclick="toggleChat()">
+        <span id="chat-icon">💬</span>
+        <strong style="color: var(--color-blue); margin-left: 5px;">Chat</strong>
     </div>
+
+    <div class="chat-box-container" id="chatBox">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="bot-status-dot"></div>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.95rem;">THS Assistant</h4>
+                    <span style="font-size: 0.75rem; opacity: 0.85;">Online • Ready to help</span>
+                </div>
+            </div>
+            <button class="chat-close-btn" onclick="toggleChat()">&times;</button>
+        </div>
+
+        <div class="chat-messages-body" id="chatMessages">
+            <div class="message bot-msg">
+                Welcome to Twifo Hemang Shalom School! How can I help you today?
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button id="chatSendBtn" onclick="sendUserMessage()">Send</button>
+        </div>
+    </div>
+
+   <script>
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.classList.toggle('active');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendUserMessage();
+            }
+        }
+
+        async function sendUserMessage() {
+            const inputField = document.getElementById('chatInput');
+            const messageText = inputField.value.trim();
+            if (messageText === '') return;
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            // 1. Render User Bubble
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-msg';
+            userDiv.textContent = messageText;
+            chatMessages.appendChild(userDiv);
+
+            inputField.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 2. Render Temporary "Typing..." Placeholder
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-msg';
+            typingDiv.id = 'bot-typing-indicator';
+            typingDiv.textContent = 'Thinking...';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 3. Request Answer from Backend AI Route
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: messageText })
+                });
+                const data = await response.json();
+                
+                // Remove typing indicator and show true response
+                document.getElementById('bot-typing-indicator').remove();
+                
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message bot-msg';
+                botDiv.textContent = data.reply;
+                chatMessages.appendChild(botDiv);
+                
+            } catch (error) {
+                document.getElementById('bot-typing-indicator').remove();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message bot-msg';
+                errorDiv.textContent = "Sorry, I'm having trouble connecting to the school server right now.";
+                chatMessages.appendChild(errorDiv);
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
 
 </body>
 </html>

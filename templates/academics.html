@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section style="background-color: var(--color-blue); color: var(--color-white); padding: 50px 20px; text-align: center;">
+    <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">ACADEMIC PROGRAMS & CLUBS</h1>
+    <p style="max-width: 600px; margin: 0 auto; opacity: 0.9;">
+        Discover how we nurture individual potential through robust curricular departments and vibrant extracurricular communities.
+    </p>
+</section>
+
+<div class="academics-container" style="max-width: 1000px; margin: 40px auto; padding: 0 20px; box-sizing: border-box;">
+    
+    <h2 style="color: var(--color-blue); border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; margin-bottom: 25px;">
+        Our Academic Departments
+    </h2>
+    <p style="margin-bottom: 20px; color: #555;">Click on any department below to explore its focus area:</p>
+    
+    <div class="accordion-group" style="margin-bottom: 50px;">
+        {% for dept in departments %}
+        <div class="accordion-item">
+            <button class="accordion-trigger" onclick="toggleAccordion('{{ dept.id }}')">
+                <span>{{ dept.name }}</span>
+                <span class="accordion-icon" id="icon-{{ dept.id }}">+</span>
+            </button>
+            <div class="accordion-panel" id="{{ dept.id }}">
+                <p>{{ dept.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h2 style="color: var(--color-blue); border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; margin-bottom: 25px;">
+        Student Life & Clubs
+    </h2>
+    <p style="margin-bottom: 20px; color: #555;">Discover our vibrant campus extracurricular activities:</p>
+    
+    <div class="accordion-group">
+        {% for club in clubs %}
+        <div class="accordion-item">
+            <button class="accordion-trigger" onclick="toggleAccordion('{{ club.id }}')">
+                <span>{{ club.name }}</span>
+                <span class="accordion-icon" id="icon-{{ club.id }}">+</span>
+            </button>
+            <div class="accordion-panel" id="{{ club.id }}">
+                <p>{{ club.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    function toggleAccordion(id) {
+        const panel = document.getElementById(id);
+        const icon = document.getElementById('icon-' + id);
+        
+        // Check if panel is already open
+        const isOpen = panel.classList.contains('open');
+        
+        // Close all open panels first for a clean accordian effect
+        document.querySelectorAll('.accordion-panel').forEach(p => p.classList.remove('open'));
+        document.querySelectorAll('.accordion-icon').forEach(i => i.textContent = '+');
+        
+        // If it wasn't open, open it now
+        if (!isOpen) {
+            panel.classList.add('open');
+            icon.textContent = '−';
+        }
+    }
+</script>
+{% endblock %}
