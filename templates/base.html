@@ -14,13 +14,37 @@
         <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Twifo Hemang Shalom School Logo" style="height: 50px; width: auto; display: block;">
     </a>
 </div>
-        <nav>
-            <a href="/">HOME</a>
-            <a href="/about">ABOUT</a>
-            <a href="/admissions">ADMISSIONS</a>
-            <a href="/academics">ACADEMICS</a>
-            <a href="/alumni">ALUMNI</a>
-        </nav>
+<nav>
+    <a href="{{ url_for('home') }}" 
+       class="{% if request.path == '/' %}active-link{% endif %}">
+       Home
+    </a>
+    
+    <a href="{{ url_for('about') }}" 
+       class="{% if request.path == '/about' %}active-link{% endif %}">
+       About Us
+    </a>
+    
+    <a href="{{ url_for('academics') }}" 
+       class="{% if request.path == '/academics' %}active-link{% endif %}">
+       Academics
+    </a>
+    
+    <a href="{{ url_for('admissions') }}" 
+       class="{% if request.path == '/admissions' %}active-link{% endif %}">
+       Admissions
+    </a>
+    
+    <a href="{{ url_for('alumni') }}" 
+       class="{% if request.path == '/alumni' %}active-link{% endif %}">
+       Alumni
+    </a>
+    
+    <a href="{{ url_for('admin_dashboard') }}" 
+       class="{% if request.path == '/admin/dashboard' %}active-link{% endif %}">
+       Admin Control
+    </a>
+</nav>
     </header>
 
     <main>

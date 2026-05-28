@@ -6,8 +6,8 @@
     <p>Connect with past students and celebrate the legacy of Twifo Hemang Shalom School.</p>
     
     <div style="margin: 20px auto; max-width: 500px;">
-        <input type="text" placeholder="Search alumni by name or year..." style="width: 70%; padding: 10px; border: 1px solid var(--color-blue);">
-        <button class="btn-primary" style="padding: 10px 20px; border: 1px solid var(--color-gold);">Search</button>
+        <input type="text" id="alumniSearchInput" placeholder="Search alumni by name, year, or career story..." 
+               style="width: 90%; padding: 12px; border: 2px solid var(--color-blue); border-radius: 6px; outline: none; transition: border-color 0.3s;">
     </div>
 </section>
 
@@ -15,14 +15,19 @@
 
 <section style="padding: 40px;">
     <h3 style="text-align: center; margin-bottom: 30px; color: var(--color-blue);">ALUMNI SUCCESS STORIES</h3>
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;">
+    
+    <div id="noResultsMessage" style="display: none; text-align: center; color: #666; padding: 20px; font-size: 1.1rem; font-style: italic;">
+        No alumni profiles match your search criteria.
+    </div>
+
+    <div id="alumniContainer" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;">
         {% for alum in alumni_stories %}
-       <div style="width: 100%; max-width: 300px; text-align: center; border: 1px solid #eee; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); box-sizing: border-box;">
+        <div class="alumni-card" style="width: 100%; max-width: 300px; text-align: center; border: 1px solid #eee; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); box-sizing: border-box; background: white; transition: all 0.2s ease;">
             <img src="{{ alum.image_url }}" alt="{{ alum.name }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid var(--color-gold);">
             
-            <h4 style="margin: 5px 0; color: var(--color-blue);">{{ alum.name }}</h4>
-            <h5 style="margin: 0 0 15px 0; color: #666;">Class of {{ alum.year }}</h5>
-            <p style="font-size: 0.9rem; line-height: 1.5; color: #444;">"{{ alum.story }}"</p>
+            <h4 class="alumni-name" style="margin: 5px 0; color: var(--color-blue);">{{ alum.name }}</h4>
+            <h5 class="alumni-year" style="margin: 0 0 15px 0; color: #666;">Class of {{ alum.year }}</h5>
+            <p class="alumni-story" style="font-size: 0.9rem; line-height: 1.5; color: #444;">"{{ alum.story }}"</p>
         </div>
         {% endfor %}
     </div>
@@ -37,4 +42,41 @@
         DONATE NOW
     </button>
 </section>
+
+<script>
+    document.getElementById('alumniSearchInput').addEventListener('keyup', function() {
+        const searchQuery = this.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.alumni-card');
+        let visibleCount = 0;
+
+        // Visual feedback border highlighting
+        if (searchQuery.length > 0) {
+            this.style.borderColor = 'var(--color-gold)';
+        } else {
+            this.style.borderColor = 'var(--color-blue)';
+        }
+
+        // Card string scan loop
+        cards.forEach(card => {
+            const name = card.querySelector('.alumni-name').textContent.toLowerCase();
+            const year = card.querySelector('.alumni-year').textContent.toLowerCase();
+            const story = card.querySelector('.alumni-story').textContent.toLowerCase();
+
+            if (name.includes(searchQuery) || year.includes(searchQuery) || story.includes(searchQuery)) {
+                card.style.display = 'block'; // Keep visible if query matches text values
+                visibleCount++;
+            } else {
+                card.style.display = 'none';  // Hide completely if no match found
+            }
+        });
+
+        // Toggle "No Results" notice display block
+        const noResults = document.getElementById('noResultsMessage');
+        if (visibleCount === 0) {
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}
