@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash # Added flash import here
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail, Message # Import Mail dependencies
+from flask_mail import Mail, Message
 import os
 import numpy as np
 
@@ -12,11 +12,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- SMTP Outbound Mail Server Configs ---
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'             # Change to your provider's SMTP server
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'naddaemarfo18@gmail.com' # Replace with your test email account
-app.config['MAIL_PASSWORD'] = 'ecbkbahjnlagimzm' # Replace with your App Password
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'            
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'naddaemarfo18@gmail.com' 
+app.config['MAIL_PASSWORD'] = 'ecbkbahjnlagimzm' 
 app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', 'naddaemarfo18@gmail.com')
 
 # Initialize extensions
@@ -64,7 +65,6 @@ def about():
     return render_template('about.html', faqs=school_faqs)
 
 
-# --- Complete Academics Route with Department & Club Arrays ---
 @app.route('/academics')
 def academics():
     departments = [
@@ -124,7 +124,6 @@ def alumni():
     return render_template('alumni.html', alumni_stories=stories)
 
 
-# --- Admissions Form Route (Database Storage Activated) ---
 @app.route('/admissions', methods=['GET', 'POST'])
 def admissions():
     if request.method == 'POST':
@@ -158,13 +157,11 @@ def update_application_status(app_id, new_status):
         
         # --- Trigger Automatic Email System ---
         try:
-            # Create core Message container (Subject, Recipient)
             msg = Message(
                 subject=f"Admission Application Update - #THS{applicant.id}",
                 recipients=[applicant.email]
             )
             
-            # Tailor the content dynamically based on your choice
             if new_status == 'Approved':
                 msg.body = f"Dear {applicant.first_name} {applicant.last_name},\n\n" \
                            f"Congratulations! We are pleased to inform you that your admission application to " \
@@ -186,15 +183,19 @@ def update_application_status(app_id, new_status):
                            f"Admissions Board\n" \
                            f"Twifo Hemang Shalom School"
             
-            # Dispatch the email immediately
             mail.send(msg)
             print(f"SUCCESS: Notification email successfully dispatched to {applicant.email}")
             
+            # Flash success message for the admin interface
+            flash(f"Success! Applicant #{applicant.id} ({applicant.first_name}) status set to {new_status} and notification email sent.", "success")
+            
         except Exception as e:
-            # Safe fallback if network/SMTP config fails so your site doesn't crash
             print(f"ERROR: Database updated, but automated mail dispatch failed: {str(e)}")
+            # Flash error fallback message for the admin interface
+            flash(f"Database updated to {new_status}, but the automated email failed to send. Check system logs.", "error")
             
     return redirect(url_for('admin_dashboard'))
+
 
 # --- AI Chat API Endpoint ---
 @app.route('/api/chat', methods=['POST'])

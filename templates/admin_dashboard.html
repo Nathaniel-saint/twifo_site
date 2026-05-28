@@ -2,6 +2,22 @@
 
 {% block content %}
 <section style="padding: 40px; max-width: 1100px; margin: 0 auto;">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 15px; margin-bottom: 25px; border-radius: 6px; font-weight: bold; font-size: 0.95rem;
+                    {% if category == 'success' %}
+                        background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc;
+                    {% else %}
+                        background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7;
+                    {% endif %}">
+                    {{ '✓' if category == 'success' else '⚠' }} {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-gold); padding-bottom: 10px; margin-bottom: 30px;">
         <h2 style="color: var(--color-blue); margin: 0;">Admissions Administration Control</h2>
         <span style="background: var(--color-blue); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">
