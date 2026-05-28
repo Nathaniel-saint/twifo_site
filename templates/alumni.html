@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section style="padding: 40px; text-align: center;">
+    <h2>Alumni Directory</h2>
+    <p>Connect with past students and celebrate the legacy of Twifo Hemang Shalom School.</p>
+    
+    <div style="margin: 20px auto; max-width: 500px;">
+        <input type="text" placeholder="Search alumni by name or year..." style="width: 70%; padding: 10px; border: 1px solid var(--color-blue);">
+        <button class="btn-primary" style="padding: 10px 20px; border: 1px solid var(--color-gold);">Search</button>
+    </div>
+</section>
+
+<hr style="border: 0; height: 1px; background: #eee; margin: 0 40px;">
+
+<section style="padding: 40px;">
+    <h3 style="text-align: center; margin-bottom: 30px; color: var(--color-blue);">ALUMNI SUCCESS STORIES</h3>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;">
+        {% for alum in alumni_stories %}
+       <div style="width: 100%; max-width: 300px; text-align: center; border: 1px solid #eee; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); box-sizing: border-box;">
+            <img src="{{ alum.image_url }}" alt="{{ alum.name }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid var(--color-gold);">
+            
+            <h4 style="margin: 5px 0; color: var(--color-blue);">{{ alum.name }}</h4>
+            <h5 style="margin: 0 0 15px 0; color: #666;">Class of {{ alum.year }}</h5>
+            <p style="font-size: 0.9rem; line-height: 1.5; color: #444;">"{{ alum.story }}"</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section style="background-color: var(--color-blue); color: var(--color-white); padding: 50px 20px; text-align: center; margin-top: 40px;">
+    <h3>Support Twifo Hemang Shalom School</h3>
+    <p style="max-width: 600px; margin: 10px auto 25px auto; opacity: 0.9;">
+        Your generous donations help us upgrade our science labs, expand student support services, and provide scholarships to brilliant but needy students.
+    </p>
+    <button class="btn-primary" style="font-size: 1.2rem; padding: 15px 40px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+        DONATE NOW
+    </button>
+</section>
+{% endblock %}

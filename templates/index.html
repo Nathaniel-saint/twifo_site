@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero-slideshow">
+    
+    <div class="slide active" style="background-image: url('{{ url_for('static', filename='images/slide1.jpg') }}');">
+        <div class="gallery-overlay">
+            <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">DISCOVER OUR VIBRANT COMMUNITY</h1>
+            <p>Fostering academic excellence and holistic child development.</p>
+        </div>
+    </div>
+
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide2.jpeg') }}');">
+        <div class="gallery-overlay">
+            <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">JOIN US FOR THE VIBRANT SEMESTER</h1>
+            <p>Explore our diverse extracurricular events, clubs, and sports programs.</p>
+        </div>
+    </div>
+
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide3.jpg') }}');">
+        <div class="gallery-overlay">
+            <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">JOIN US FOR THE NEXT SEMESTER</h1>
+            <p>Admissions are currently open. Apply online today to secure a spot.</p>
+        </div>
+    </div>
+
+    <button class="slide-nav prev" onclick="changeSlide(-1)">&lt;</button>
+    <button class="slide-nav next" onclick="changeSlide(1)">&gt;</button>
+
+    <div class="slide-dots">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+    </div>
+</div>
+
+<section style="padding: 50px 20px; text-align: center; max-width: 800px; margin: 0 auto;">
+    <h2 style="color: var(--color-blue); font-size: 2rem;">PRESIDENT'S MESSAGE</h2>
+    <p style="line-height: 1.8; color: #444;">
+        Welcome to Twifo Hemang Shalom School. We believe in providing an environment where students are inspired to learn, grow, and lead. Our dedicated faculty members ensure that every child's unique potential is discovered and nurtured.
+    </p>
+</section>
+
+<script>
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let slideInterval = setInterval(autoSlide, 5000); // Changes image every 5 seconds
+
+    function updateSlides() {
+        // Remove active class from all slides and dots
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        // Add active class to current selection
+        slides[currentSlideIndex].classList.add('active');
+        dots[currentSlideIndex].classList.add('active');
+    }
+
+    function changeSlide(direction) {
+        resetTimer();
+        currentSlideIndex += direction;
+        
+        if (currentSlideIndex >= slides.length) {
+            currentSlideIndex = 0;
+        } else if (currentSlideIndex < 0) {
+            currentSlideIndex = slides.length - 1;
+        }
+        updateSlides();
+    }
+
+    function currentSlide(index) {
+        resetTimer();
+        currentSlideIndex = index;
+        updateSlides();
+    }
+
+    function autoSlide() {
+        currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+        updateSlides();
+    }
+
+    function resetTimer() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(autoSlide, 5000); // Restarts countdown on user interaction
+    }
+</script>
+{% endblock %}

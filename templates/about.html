@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section style="padding: 40px;">
+    <h2>About Our School</h2>
+    <p>Twifo Hemang Shalom School is dedicated to academic excellence and moral uprightness.</p>
+    
+    <hr>
+    
+    <h2>Administration</h2>
+    <ul>
+        <li><strong>Headmaster:</strong> Mr. John Doe</li>
+        <li><strong>Assistant Headmistress:</strong> Mrs. Jane Smith</li>
+    </ul>
+
+    <hr>
+
+    <h2>Frequently Asked Questions (FAQs)</h2>
+    <div class="faq-section">
+        {% for faq in faqs %}
+            <div style="margin-bottom: 15px;">
+                <h4>Q: {{ faq.question }}</h4>
+                <p>A: {{ faq.answer }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

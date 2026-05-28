@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section style="max-width: 600px; margin: 0 auto; box-sizing: border-box;">
+    <h2>Apply Now</h2>
+    <p>Fill out the form below to begin the admission process.</p>
+
+    <form action="#" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        <label>First Name:</label>
+        <input type="text" name="firstname" required style="padding: 8px;">
+
+        <label>Last Name:</label>
+        <input type="text" name="lastname" required style="padding: 8px;">
+
+        <label>Email Address:</label>
+        <input type="email" name="email" required style="padding: 8px;">
+
+        <button type="submit" class="btn-primary" style="padding: 12px;">SUBMIT APPLICATION</button>
+    </form>
+</section>
+{% endblock %}
