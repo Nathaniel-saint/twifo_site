@@ -20,6 +20,12 @@
             <p style="font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Admissions are currently open. Apply online today to secure a spot.</p>
         </div>
     </div>
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide3.jpeg') }}'); background-size: cover; background-position: center;">
+        <div class="gallery-overlay">
+            <h1 style="margin: 0 0 12px 0; letter-spacing: 1.5px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">JOIN OUR VACATION PROGRAM</h1>
+            <p style="font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Enjoy our exciting summer camp activities and educational workshops.</p>
+        </div>
+    </div>
 
     <button class="slide-nav prev" onclick="changeSlide(-1)" aria-label="Previous Slide" style="display: flex; align-items: center; justify-content: center;">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -32,113 +38,162 @@
         <span class="dot active" onclick="currentSlide(0)"></span>
         <span class="dot" onclick="currentSlide(1)"></span>
         <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
     </div>
 </div>
 
-<section style="padding: 60px 20px 30px 20px; max-width: 900px; margin: 0 auto;">
-    <div style="background: #ffffff; padding: 45px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border-left: 6px solid var(--color-gold); text-align: left;">
-        <h2 style="color: var(--color-blue); font-size: 2.2rem; margin-top: 0; margin-bottom: 25px; letter-spacing: 0.5px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-transform: uppercase; font-weight: 800;">President's Message</h2>
-        
-        <p style="line-height: 1.8; color: #1e293b; font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; letter-spacing: -0.2px;">
-            Welcome to Twifo Hemang Shalom School.
-        </p>
-        
-        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 20px;">
-            At the core of everything we do is our foundational belief: <strong style="color: var(--color-blue); font-weight: 700;">Nurturing for Excellence</strong>. We understand that true excellence is not achieved by chance; it is carefully cultivated. That is why we are dedicated to providing a serene, inspiring, and rigorous environment where students feel safe to discover their unique strengths, challenge their minds, and step into their potential as future leaders.
-        </p>
-        
-        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 30px;">
-            Our exceptional faculty members do more than teach—they mentor, guide, and inspire. By balancing strong academic fundamentals with creative extracurricular endeavors, we ensure that every child leaves our halls prepared to make a meaningful impact on the global stage.
-        </p>
-        
-        <blockquote style="line-height: 1.8; color: var(--color-blue); font-size: 1.1rem; font-style: italic; font-weight: 600; margin: 0; background: #f8fafc; padding: 20px; border-radius: 8px; border-right: 4px solid var(--color-gold);">
-            "Thank you for trusting us with your child's educational journey. Together, let us cultivate a generation driven by character, wisdom, and exceptional achievement."
-        </blockquote>
+<section style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 25px 20px;">
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.95rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Hours: <b>7:00 AM – 3:30 PM</b> (Mon – Fri)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.95rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span>Phone: <a href="tel:+233244123456" style="color: #334155; text-decoration: none; font-weight: bold;">+233 (0) 24 412 3456</a></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.95rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Location: <b>Twifo Hemang, Ghana</b></span>
+        </div>
+        <div style="background: rgba(212,161,43,0.1); border: 1px solid var(--color-gold); padding: 8px 16px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+            <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
+            <span style="font-size: 0.9rem; font-weight: bold; color: var(--color-blue);">Admissions Ongoing</span>
+            <a href="{{ url_for('admissions') }}" style="color: var(--color-blue); font-weight: 800; font-size: 0.9rem; margin-left: 5px; text-decoration: underline;">Apply Online →</a>
+        </div>
     </div>
 </section>
 
-<section style="padding: 30px 20px 70px 20px; max-width: 900px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 12px; border-bottom: 3px solid var(--color-gold); padding-bottom: 12px; margin-bottom: 35px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        <h2 style="color: var(--color-blue); font-size: 1.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800;">Official Campus Noticeboard</h2>
-    </div>
+<section style="padding: 60px 20px 30px 20px; max-width: 1100px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; align-items: start;">
+        
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+            <div>
+                <span style="color: var(--color-gold); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Our Governance</span>
+                <h2 style="color: var(--color-blue); font-size: 1.8rem; margin: 5px 0 15px 0; font-weight: 800;">Founders & Proprietors</h2>
+                <p style="line-height: 1.7; color: #334155; margin-bottom: 15px;">
+                    Twifo Hemang Shalom School was intentionally established by <b>Rev. Dr. Robert Yaw Owusu (PhD)</b> and <b>Mrs. Christiana Owusu</b>. 
+                </p>
+                <p style="line-height: 1.7; color: #475569; font-size: 0.95rem;">
+                    A proud native of Kumasi, Ashanti Region, and an esteemed alumnus of Baylor University, Dr. Owusu served as the Founding & Senior Pastor of Amazing Grace Baptist Church in Atlanta, Georgia, USA, before focusing his efforts on local educational initiatives. Working in lockstep, Mrs. Christiana Owusu oversees core residential care dynamics, student welfare parameters, and holistic character formation tracks.
+                </p>
+            </div>
 
-    {% if not posts %}
-        <div style="text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; padding: 50px 20px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <p style="color: #64748b; font-style: italic; font-size: 1.05rem; margin: 0; max-width: 450px; line-height: 1.5;">
-                There are no active notices or updates posted for today. Check back soon!
-            </p>
+            <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; border-left: 4px solid var(--color-blue);">
+                <h4 style="margin: 0 0 12px 0; color: var(--color-blue); font-size: 1.05rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Campus Operational Executives</h4>
+                <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; font-size: 0.95rem;">
+                        <span style="color: #475569;">Headmaster</span>
+                        <b style="color: var(--color-blue);">Mr. Anthony Obeng Essel</b>
+                    </li>
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; font-size: 0.95rem;">
+                        <span style="color: #475569;">Head of Academic Affairs</span>
+                        <b style="color: var(--color-blue);">Mr. Christopher Marfo Addae</b>
+                    </li>
+                    <li style="display: flex; justify-content: space-between; padding-bottom: 4px; font-size: 0.95rem;">
+                        <span style="color: #475569;">Campus Administrator</span>
+                        <b style="color: var(--color-blue);">Mr. Benjamin Quao</b>
+                    </li>
+                </ul>
+            </div>
         </div>
-    {% else %}
-        <div style="display: flex; flex-direction: column; gap: 25px;">
-            {% for post in posts %}
-                <div style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; padding: 25px; transition: transform 0.2s, box-shadow 0.2s;" 
-                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,0.05)';" 
-                     onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.02)';">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; gap: 15px; flex-wrap: wrap;">
-                        <h3 style="color: var(--color-blue); margin: 0; font-size: 1.3rem; font-weight: 700; line-height: 1.3;">{{ post.title }}</h3>
-                        <span style="background: #f1f5f9; color: #475569; font-size: 0.8rem; padding: 6px 14px; border-radius: 20px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e8f0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            {{ post.date_posted }}
-                        </span>
-                    </div>
-                    <p style="color: #334155; line-height: 1.7; margin: 0; font-size: 1.02rem; white-space: pre-line;">{{ post.content }}</p>
+
+        <div style="display: flex; flex-direction: column; gap: 25px; background: #ffffff; border: 1px solid #e2e8f0; padding: 35px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.01);">
+            <h3 style="color: var(--color-blue); margin: 0 0 5px 0; font-weight: 800; font-size: 1.5rem;">Campus Life & Amenities</h3>
+            <p style="color: #64748b; margin: 0 0 20px 0; font-size: 0.95rem;">Providing holistic environments for regional and international boarding students.</p>
+
+            <div style="display: flex; gap: 15px; align-items: flex-start;">
+                <div style="background: rgba(26,48,90,0.06); padding: 10px; border-radius: 8px; color: var(--color-blue);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </div>
-            {% endfor %}
+                <div>
+                    <h4 style="margin: 0 0 4px 0; color: var(--color-blue); font-size: 1.05rem;">Supervised Boarding Facilities</h4>
+                    <p style="margin: 0; color: #475569; font-size: 0.92rem; line-height: 1.5;">Premium, completely separated hostel facilities for boys and girls under meticulous resident staff supervision. Package includes nutritious daily meal rosters.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; align-items: flex-start;">
+                <div style="background: rgba(26,48,90,0.06); padding: 10px; border-radius: 8px; color: var(--color-blue);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 4px 0; color: var(--color-blue); font-size: 1.05rem;">Official Campus Attire</h4>
+                    <p style="margin: 0; color: #475569; font-size: 0.92rem; line-height: 1.5;">Our uniform profile centers on a tailored tan shirt displaying the official school crest, paired with standard khaki trousers or skirts, available directly at the campus store.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; align-items: flex-start;">
+                <div style="background: rgba(26,48,90,0.06); padding: 10px; border-radius: 8px; color: var(--color-blue);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 4px 0; color: var(--color-blue); font-size: 1.05rem;">Co-Curricular Organizations</h4>
+                    <p style="margin: 0; color: #475569; font-size: 0.92rem; line-height: 1.5;">Students thrive across active tech and academic clubs, inter-scholastic football leagues, and our highly acclaimed music and performance choir department.</p>
+                </div>
+            </div>
         </div>
-    {% endif %}
+    </div>
+</section>
+
+<section style="padding: 30px 20px 60px 20px; max-width: 1100px; margin: 0 auto;">
+    <div style="background: #ffffff; padding: 45px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">
+        <span style="color: var(--color-gold); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Noticeboard</span>
+        <h2 style="color: var(--color-blue); font-size: 1.8rem; margin: 5px 0 25px 0; font-weight: 800;">Latest Announcements</h2>
+        
+        {% if posts %}
+            <div style="display: flex; flex-direction: column; gap: 25px;">
+                {% for post in posts %}
+                    <div style="border-bottom: 1px dashed #e2e8f0; padding-bottom: 20px;">
+                        <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">{{ post.date_posted }}</span>
+                        <h4 style="color: var(--color-blue); margin: 4px 0 8px 0; font-size: 1.15rem; font-weight: 700;">{{ post.title }}</h4>
+                        <p style="line-height: 1.6; color: #475569; margin: 0; font-size: 0.95rem;">{{ post.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #64748b; font-style: italic; margin: 0;">No official noticeboard announcements have been posted for this week.</p>
+        {% endif %}
+    </div>
 </section>
 
 <script>
     let currentSlideIndex = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
-    let slideInterval = setInterval(autoSlide, 5000);
 
-    function updateSlides() {
+    function showSlide(index) {
+        // Prevent out-of-bounds by wrapping around infinitely
+        if (index >= slides.length) {
+            currentSlideIndex = 0;
+        } else if (index < 0) {
+            currentSlideIndex = slides.length - 1;
+        } else {
+            currentSlideIndex = index;
+        }
+
+        // Strip the active classes from all items
         slides.forEach(slide => slide.classList.remove('active'));
         dots.forEach(dot => dot.classList.remove('active'));
+
+        // Apply active classes to reveal the targeted slide and dot element
         slides[currentSlideIndex].classList.add('active');
         dots[currentSlideIndex].classList.add('active');
     }
 
+    // Handles arrow navigation clicks (e.g., -1 or 1)
     function changeSlide(direction) {
-        resetTimer();
-        currentSlideIndex += direction;
-        if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
-        else if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
-        updateSlides();
+        showSlide(currentSlideIndex + direction);
     }
 
+    // Handles direct indicator dot navigation clicks
     function currentSlide(index) {
-        resetTimer();
-        currentSlideIndex = index;
-        updateSlides();
+        showSlide(index);
     }
 
-    function autoSlide() {
-        currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-        updateSlides();
-    }
-
-    function resetTimer() {
-        clearInterval(slideInterval);
-        slideInterval = setInterval(autoSlide, 5000);
-    }
+    // Automatically transitions to the next slide every 5 seconds
+    setInterval(() => {
+        changeSlide(1);
+    }, 5000);
 </script>
+
 {% endblock %}

@@ -5,9 +5,15 @@ import os
 from datetime import datetime
 from werkzeug.utils import secure_filename 
 
+# 1. Import the dotenv loader extension
+from dotenv import load_dotenv
+
 # Official Google GenAI Client
 from google import genai
 from google.genai import types
+
+# 2. Force load the local .env variables into the environment block before reading them
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -32,20 +38,29 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
     app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB file restrictions
+# --- File Upload & Extension Validation Setup ---
+# Explicitly define valid document uploads
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
 
+# Register standard upload attributes to app.config to prevent KeyErrors
+app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB file restrictions
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Ensure upload directory path layers exist structural-wise
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    """Validates uploaded document files against our registered application configuration schema."""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 # --- Outbound Mail Service Configs ---
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'            
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'naddaemarfo18@gmail.com')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'caddaemarfo13@gmail.com')
 app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
 app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', app.config['MAIL_USERNAME'])
 
@@ -100,6 +115,7 @@ school_context = load_school_knowledge_context()
 @app.route('/')
 def home():
     all_posts = NewsPost.query.order_by(NewsPost.id.desc()).all()
+    # Note: If your HTML file is named 'home.html', change 'index.html' to 'home.html' below
     return render_template('index.html', posts=all_posts)
 
 @app.route('/about')
@@ -146,7 +162,6 @@ def admissions():
         if uploaded_file and uploaded_file.filename != '':
             if allowed_file(uploaded_file.filename):
                 safe_filename = secure_filename(uploaded_file.filename)
-                # Production mitigation strategy: Append unique randomized hash IDs to prevent collisions
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 filename_to_save = f"{timestamp}_{os.urandom(4).hex()}_{safe_filename}"
                 uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_to_save))
@@ -167,9 +182,11 @@ def admissions():
 def admin_login():
     """Explicit login route protecting dashboard initialization."""
     if request.method == 'POST':
-        # Recommended: Map these verification elements to specialized database user validation fields
         admin_pass = request.form.get('password')
-        if admin_pass == os.environ.get('ADMIN_DASHBOARD_PASSWORD', 'fallback_secure_password_here'):
+        # Safely checks environment variable with a local fallback option
+        secure_admin_password = os.environ.get('ADMIN_DASHBOARD_PASSWORD', 'Robert_Chritiana@THS')
+        
+        if admin_pass == secure_admin_password:
             session['is_admin'] = True
             return redirect(url_for('admin_dashboard'))
         flash("Invalid administrator access credentials entered.", "error")
@@ -348,12 +365,10 @@ def chat_api():
     if not user_message:
         return jsonify({"reply": "I didn't catch that."})
         
-    # XSS Injection mitigation filtering strategy
     elif "<script>" in user_message.lower():
         return jsonify({"reply": "I am unable to execute or parse code scripts. How can I help you with school information today?"})
     
     try:
-        # Construct explicit system operational directions
         system_instruction = (
             "You are the polite, welcoming, and official AI Assistant for Twifo Hemang Shalom School.\n"
             "Your main objective is to answer user queries accurately using the verified school context provided below.\n"
@@ -370,14 +385,13 @@ def chat_api():
             contents=user_message,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
-                temperature=0.3, # Keeps answers anchored and structurally factual
+                temperature=0.3, 
             ),
         )
         
         ai_reply = response.text.strip()
         
     except Exception as e:
-        # Soft error handling logic masking explicit exception traces to users
         print(f"Gemini Engine Infrastructure Failure Trace: {str(e)}")
         ai_reply = "I ran into a small configuration issue while processing that request. Please try again or email admin."
 

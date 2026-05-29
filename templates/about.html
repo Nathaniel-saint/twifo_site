@@ -1,88 +1,133 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section style="background-color: var(--color-blue); color: var(--color-white); padding: 50px 20px; text-align: center;">
-    <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">ABOUT OUR SCHOOL</h1>
-    <p style="max-width: 600px; margin: 0 auto; opacity: 0.9; font-size: 1.05rem;">
-        Founded in 2004, Twifo Hemang Shalom School is dedicated to fostering academic excellence, holistic growth, and deep moral uprightness.
+<div style="background: linear-gradient(135deg, var(--color-blue) 0%, #1e3a8a 100%); color: #ffffff; padding: 60px 20px; text-align: center;">
+    <h1 style="margin: 0; font-size: 2.5rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">About Our Institution</h1>
+    <p style="margin: 10px 0 0 0; color: #93c5fd; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Discover the history, leadership, and foundational pillars of Twifo Hemang Shalom School.
     </p>
-</section>
+</div>
 
-<section style="padding: 50px 20px; max-width: 1000px; margin: 0 auto; box-sizing: border-box;">
+<div style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 50px; align-items: start;">
     
-    <div style="margin-bottom: 50px;">
-        <h2 style="color: var(--color-blue); border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; margin-bottom: 20px;">
-            Our History & Mission
-        </h2>
-        <p style="line-height: 1.7; color: #334155; font-size: 1.05rem;">
-            Twifo Hemang Shalom School was established in <b>2004</b> with a clear vision: to provide a nurturing, rigorous, and values-based educational environment for students. Over the decades, we have remained true to our foundational pillars, balancing top-tier academic instruction with character development to ensure our graduates are equipped to lead with integrity.
-        </p>
-    </div>
-
-    <div style="margin-bottom: 50px;">
-        <h2 style="color: var(--color-blue); border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; margin-bottom: 25px;">
-            Proprietors & Directors
-        </h2>
+    <div style="display: flex; flex-direction: column; gap: 45px;">
         
-        <div style="background-color: #f8fafc; border-left: 4px solid var(--color-gold); padding: 25px; border-radius: 0 8px 8px 0; margin-bottom: 20px;">
-            <h3 style="margin: 0 0 5px 0; color: var(--color-blue); font-size: 1.3rem;">Rev. Dr. Robert Yaw Owusu (PhD)</h3>
-            <p style="margin: 0 0 15px 0; color: var(--color-gold); font-weight: bold; font-size: 0.95rem; text-transform: uppercase;">Co-Founder & Director</p>
-            <p style="line-height: 1.6; color: #475569; margin: 0; font-size: 0.98rem;">
-                A native of Kumasi, Ashanti Region, Ghana, Rev. Dr. Robert Yaw Owusu is an alumnus of Baylor University and the Founding & Senior Pastor (Retired) of the Amazing Grace Baptist Church of Atlanta, GA, USA. His global experience in leadership and pastoral care forms the spiritual and ethical anchor of our institution.
+        <section>
+            <h2 style="color: var(--color-blue); font-size: 1.8rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; font-weight: 800;">
+                OUR HISTORY & MISSION
+            </h2>
+            <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; text-align: justify;">
+                Founded in <b>September 2004</b> with a pioneer enrollment of only four (4) students, Twifo Hemang Shalom School was built on a vision to provide a serene, academically rigorous, and deeply values-based educational environment. Over the decades, the school has blossomed into a premier landmark institution within the Central Region of Ghana, currently serving over 720 active students across our Nursery, Primary, and Junior High School (JHS) departments.
             </p>
-        </div>
-
-        <div style="background-color: #f8fafc; border-left: 4px solid var(--color-gold); padding: 25px; border-radius: 0 8px 8px 0;">
-            <h3 style="margin: 0 0 5px 0; color: var(--color-blue); font-size: 1.3rem;">Mrs. Christiana Owusu</h3>
-            <p style="margin: 0 0 5px 0; color: var(--color-gold); font-weight: bold; font-size: 0.95rem;text-transform: uppercase;">Co-Founder & Director</p>
-            <p style="line-height: 1.6; color: #475569; margin: 0; font-size: 0.98rem;">
-                Working hand-in-hand with the structural management team, Mrs. Christiana Owusu guides the community care standards, student welfare, and character programs that define the student experience at Shalom School.
+            <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; text-align: justify;">
+                Our mission balances elite academic preparation with holistic personal development. We are dedicated to ensuring that every child leaves our halls anchored in Christian moral uprightness, critical thinking habits, and the technical competence required to make a meaningful impact on the global stage.
             </p>
-        </div>
-    </div>
+        </section>
 
-    <div style="margin-bottom: 50px;">
-        <h2 style="color: var(--color-blue); border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; margin-bottom: 25px;">
-            School Management Leadership
-        </h2>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <section style="background: #f8fafc; padding: 35px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <h2 style="color: var(--color-blue); font-size: 1.6rem; margin-top: 0; margin-bottom: 25px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                Founders & Proprietors
+            </h2>
             
-            <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <h4 style="margin: 0 0 5px 0; color: var(--color-blue); font-size: 1.15rem;">Mr. Benjamin Quao</h4>
-                <p style="margin: 0; color: #64748b; font-weight: bold; font-size: 0.9rem;">Administrator</p>
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: var(--color-blue); margin: 0 0 5px 0; font-size: 1.25rem; font-weight: 700;">
+                    Rev. Dr. Robert Yaw Owusu (PhD) <span style="font-weight: normal; color: #64748b; font-size: 0.95rem;">| Co-Founder & Director</span>
+                </h3>
+                <p style="line-height: 1.7; color: #475569; font-size: 1rem; margin: 0; text-align: justify;">
+                    A native of Kumasi, Ashanti Region, Ghana, Dr. Owusu is a distinguished alumnus of Baylor University and the retired Founding & Senior Pastor of Amazing Grace Baptist Church in Atlanta, Georgia, USA. His international administrative background and pastoral dedication provide the spiritual, ethical, and structural anchor of our entire school ecosystem.
+                </p>
             </div>
 
-            <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <h4 style="margin: 0 0 5px 0; color: var(--color-blue); font-size: 1.15rem;">Mr. Christopher Marfo Addae</h4>
-                <p style="margin: 0; color: #64748b; font-weight: bold; font-size: 0.9rem;">Head of Academic Affairs</p>
-            </div>
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 25px 0;">
 
-            <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <h4 style="margin: 0 0 5px 0; color: var(--color-blue); font-size: 1.15rem;">Mr. Anthony Obeng Essel</h4>
-                <p style="margin: 0; color: #64748b; font-weight: bold; font-size: 0.9rem;">Headmaster</p>
+            <div>
+                <h3 style="color: var(--color-blue); margin: 0 0 5px 0; font-size: 1.25rem; font-weight: 700;">
+                    Mrs. Christiana Owusu <span style="font-weight: normal; color: #64748b; font-size: 0.95rem;">| Co-Founder & Director</span>
+                </h3>
+                <p style="line-height: 1.7; color: #475569; font-size: 1rem; margin: 0; text-align: justify;">
+                    Working hand-in-hand with campus leadership, Mrs. Christiana Owusu lovingly directs our institutional community care standards, student welfare parameters, and core character formation structures. Her focus ensures that the residential life experience matches the school's high academic expectations.
+                </p>
             </div>
+        </section>
 
-        </div>
+        <section>
+            <h2 style="color: var(--color-blue); font-size: 1.8rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; font-weight: 800;">
+                FREQUENTLY ASKED QUESTIONS
+            </h2>
+            <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
+                
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px;">
+                    <b style="color: var(--color-blue); font-size: 1.05rem; display: block; margin-bottom: 6px;">Q: What are the daily campus operating hours?</b>
+                    <span style="color: #475569; line-height: 1.6; display: block;">Official administrative operations and classes run strictly from <b>8:00 AM to 3:30 PM</b>, Monday through Friday. Visitors are welcome to schedule campus tours during these times.</span>
+                </div>
+
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px;">
+                    <b style="color: var(--color-blue); font-size: 1.05rem; display: block; margin-bottom: 6px;">Q: What is the boarding house accommodation structure?</b>
+                    <span style="color: #475569; line-height: 1.6; display: block;">We offer premium, completely separated residential hostel blocks for boys and girls on campus. Each dormitory stays under full adult supervision by resident houseparents and includes full daily meal rosters.</span>
+                </div>
+
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px;">
+                    <b style="color: var(--color-blue); font-size: 1.05rem; display: block; margin-bottom: 6px;">Q: What uniform profile does the school use?</b>
+                    <span style="color: #475569; line-height: 1.6; display: block;">Our official uniform features a tailored <b>tan shirt</b> decorated with the school crest logo, paired neatly with standard khaki trousers or skirts. Complete uniform pieces can be bought directly at the campus store.</span>
+                </div>
+
+            </div>
+        </section>
+
     </div>
 
-    {% if faqs %}
-    <div style="margin-bottom: 50px;"> <h2 style="color: var(--color-blue); border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; margin-bottom: 25px;">
-            Frequently Asked Questions (FAQs)
-        </h2>
-        <div class="faq-section" style="display: flex; flex-direction: column; gap: 20px;">
-            {% for faq in faqs %}
-                <div style="border-bottom: 1px solid #edf2f7; padding-bottom: 15px;">
-                    <h4 style="margin: 0 0 8px 0; color: var(--color-blue); font-size: 1.1rem; display: flex; gap: 8px;">
-                        <span style="color: var(--color-gold);">Q:</span> {{ faq.question }}
-                    </h4>
-                    <p style="margin: 0; color: #475569; line-height: 1.6; padding-left: 24px;">
-                        {{ faq.answer }}
-                    </p>
+    <div style="position: sticky; top: 20px; display: flex; flex-direction: column; gap: 30px;">
+        
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            <h3 style="color: var(--color-blue); margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; border-bottom: 2px solid var(--color-gold); padding-bottom: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                School Administration
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+                <div>
+                    <span style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; display: block; font-weight: bold;">Headmaster</span>
+                    <strong style="color: var(--color-blue); font-size: 1.05rem;">Mr. Anthony Obeng Essel</strong>
                 </div>
-            {% endfor %}
+                <div>
+                    <span style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; display: block; font-weight: bold;">Head of Academic Affairs</span>
+                    <strong style="color: var(--color-blue); font-size: 1.05rem;">Mr. Christopher Marfo Addae</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; display: block; font-weight: bold;">Campus Administrator</span>
+                    <strong style="color: var(--color-blue); font-size: 1.05rem;">Mr. Benjamin Quao</strong>
+                </div>
+            </div>
         </div>
-    </div> {% endif %}
 
-</section>
+        <div style="background: var(--color-blue); color: #ffffff; border-radius: 12px; padding: 25px;">
+            <h3 style="color: var(--color-gold); margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                Official Accreditations
+            </h3>
+            <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                <li style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                    GES Registration ID:<br><b style="color: #ffffff; font-size: 0.95rem;">CR/THD/P.010</b>
+                </li>
+                <li style="padding-bottom: 4px;">
+                    WAEC Center Code:<br><b style="color: #ffffff; font-size: 0.95rem;">5030303</b>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function adjustAboutLayout() {
+        const container = document.querySelector('[style*="grid-template-columns"]');
+        if (window.innerWidth < 768) {
+            container.style.gridTemplateColumns = '1fr';
+            container.style.gap = '30px';
+        } else {
+            container.style.gridTemplateColumns = '2fr 1fr';
+            container.style.gap = '50px';
+        }
+    }
+    window.addEventListener('resize', adjustAboutLayout);
+    window.addEventListener('DOMContentLoaded', adjustAboutLayout);
+</script>
 {% endblock %}
