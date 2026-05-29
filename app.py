@@ -1,84 +1,84 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session 
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail, Message
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename 
-from threading import Thread # <-- Added for background email handling
-
-# 1. Import the dotenv loader extension
+from threading import Thread 
 from dotenv import load_dotenv
 
-# Official Google GenAI Client
+# Production Clients
 from google import genai
 from google.genai import types
+import resend  
 
-# 2. Force load the local .env variables into the environment block before reading them
+# Load local environment configuration properties if testing locally
 load_dotenv()
 
 app = Flask(__name__)
 
-# --- System Security & Production Database Configs ---
+# --- Production Environment Keys & Integrity Validations ---
 SECRET_KEY = os.environ.get('SECRET_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')  
 
-# Production check: default to standard path if running locally
-if not SECRET_KEY or not GEMINI_API_KEY or not MAIL_PASSWORD:
-    raise RuntimeError("CRITICAL STARTUP ERROR: Missing vital infrastructure environment keys!")
+# Hard fail immediately if the cloud cluster fails to inject infrastructure secrets
+if not SECRET_KEY or not GEMINI_API_KEY or not RESEND_API_KEY:
+    raise RuntimeError("PRODUCTION SYSTEM CRITICAL ERROR: Essential infrastructure keys are missing!")
 
 app.config['SECRET_KEY'] = SECRET_KEY
 
-# Determine if we are running live on Railway by checking the volume folder path
+# Persistent Directory Setup 
 if os.path.exists('/app/static/uploads'):
-    # In production on Railway, place the live database inside the persistent volume disk!
+    # Production on Railway: Store sqlite data safely inside the persistent volume mount point
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////app/static/uploads/school.db'
     app.config['UPLOAD_FOLDER'] = '/app/static/uploads'
 else:
-    # Local Development Fallback
+    # Local System Testing Fallback
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
     app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 
-# --- File Upload & Extension Validation Setup ---
-# Explicitly define valid document uploads
+# --- Security & Traffic Limitations Configs ---
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
-
-# Register standard upload attributes to app.config to prevent KeyErrors
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB file restrictions
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max size cap: 5MB to block payload attacks
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Ensure upload directory path layers exist structural-wise
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
-    """Validates uploaded document files against our registered application configuration schema."""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# --- Outbound Mail Service Configs (Updated for Production Stability) ---
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'            
-app.config['MAIL_PORT'] = 587                           # Changed from 465 to 587
-app.config['MAIL_USE_TLS'] = True                       # Swapped from False to True
-app.config['MAIL_USE_SSL'] = False                      # Swapped from True to False
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'caddaemarfo13@gmail.com')
-app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
-app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', app.config['MAIL_USERNAME'])
-
-# Initialize active infrastructure extensions
+# Initialize Database & Core API clients
 db = SQLAlchemy(app)
-mail = Mail(app)
+resend.api_key = RESEND_API_KEY  
 
-# --- Background Email Worker ---
-def send_async_email(flask_app, message):
-    """Sends email tasks inside an independent background thread context."""
-    with flask_app.app_context():
-        try:
-            mail.send(message)
-        except Exception as e:
-            print(f"Background Email Service Error Log: {str(e)}")
+# --- Production Asynchronous HTTP Email Engine ---
+def send_async_email(to_email, subject, body_text):
+    """Dispatches transactional communications asynchronously over HTTPS Port 443."""
+    try:
+        # Wrap message body safely into clean HTML structures with structural typography rules
+        html_content = f"""
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h2 style="color: #1e3a8a; margin-top: 0;">Twifo Hemang Shalom School</h2>
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+            <p style="white-space: pre-line; color: #334155; font-size: 16px; line-height: 1.6;">{body_text}</p>
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+            <small style="color: #64748b; font-size: 12px; display: block; text-align: center;">This is an automated operational transmission from the administrative system dashboard.</small>
+        </div>
+        """
+        
+        # Dispatch request via Resend infrastructure
+        resend.Emails.send({
+            "from": "Twifo Hemang Shalom School <onboarding@resend.dev>", 
+            "to": [to_email],
+            "subject": subject,
+            "html": html_content
+        })
+        print(f"Production Service Monitor: Email thread successfully processed delivery payload for: {to_email}")
+    except Exception as e:
+        print(f"Background Email Engine Exception Log: {str(e)}")
 
-# --- Relational Database Schema Models ---
+# --- Schema Architecture ---
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
@@ -104,11 +104,10 @@ class NewsPost(db.Model):
 with app.app_context():
     db.create_all()
 
-# --- Google Gemini Engine Core Instantiation ---
+# --- Google Gemini Engine Client ---
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 def load_school_knowledge_context():
-    """Reads the local knowledge base text file securely as a context block."""
     if not os.path.exists('school_data.txt'):
         return (
             "Twifo Hemang Shalom School was founded in 2004. It is dedicated to academic excellence, "
@@ -120,8 +119,7 @@ def load_school_knowledge_context():
 
 school_context = load_school_knowledge_context()
 
-# --- Public Navigation Web Routes ---
-
+# --- Navigation Architecture Routes ---
 @app.route('/')
 def home():
     all_posts = NewsPost.query.order_by(NewsPost.id.desc()).all()
@@ -164,7 +162,6 @@ def admissions():
         fname = request.form.get('firstname')
         lname = request.form.get('lastname')
         u_email = request.form.get('email')
-        
         uploaded_file = request.files.get('document')
         filename_to_save = None
         
@@ -184,16 +181,12 @@ def admissions():
         return render_template('admissions.html', success=True)
     return render_template('admissions.html', success=False)
 
-
-# --- Secure Production-Hardened Admin Controls ---
-
+# --- Admin Panel Core Operations ---
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    """Explicit login route protecting dashboard initialization."""
     if request.method == 'POST':
         admin_pass = request.form.get('password')
         secure_admin_password = os.environ.get('ADMIN_DASHBOARD_PASSWORD', 'Robert_Chritiana@THS')
-        
         if admin_pass == secure_admin_password:
             session['is_admin'] = True
             return redirect(url_for('admin_dashboard'))
@@ -204,11 +197,9 @@ def admin_login():
 def admin_dashboard():
     if not session.get('is_admin'):
         return redirect(url_for('admin_login'))
-        
     all_applications = Application.query.all()
     all_support_requests = SupportRequest.query.all()
     all_posts = NewsPost.query.order_by(NewsPost.id.desc()).all()
-    
     return render_template('admin_dashboard.html', applications=all_applications, support_requests=all_support_requests, posts=all_posts)
 
 @app.route('/admin/add_news', methods=['POST'])
@@ -248,13 +239,8 @@ def update_application_status(app_id, new_status):
         
         full_name = f"{applicant.first_name} {applicant.last_name}"
         
-        msg = Message(
-            subject=f"Admission Application Update - #THS{applicant.id}", 
-            recipients=[applicant.email]
-        )
-        
         if new_status == 'Approved':
-            msg.body = (
+            email_body = (
                 f"Dear {full_name},\n\n"
                 f"Congratulations! We are pleased to inform you that your admission application to "
                 f"Twifo Hemang Shalom School has been APPROVED.\n\n"
@@ -266,7 +252,7 @@ def update_application_status(app_id, new_status):
                 f"Twifo Hemang Shalom School"
             )
         else:
-            msg.body = (
+            email_body = (
                 f"Dear {full_name},\n\n"
                 f"Thank you for your interest in joining Twifo Hemang Shalom School.\n\n"
                 f"After careful review of our enrollment capacity limitations for the upcoming term, "
@@ -278,9 +264,8 @@ def update_application_status(app_id, new_status):
                 f"Twifo Hemang Shalom School"
             )
             
-        # Hand off the sending operation to an async background thread 
-        # This keeps the browser from locking up or throwing a 504 error!
-        Thread(target=send_async_email, args=(app, msg)).start()
+        email_subject = f"Admission Application Update - #THS{applicant.id}"
+        Thread(target=send_async_email, args=(applicant.email, email_subject, email_body)).start()
         flash(f"Success! Applicant #{applicant.id} status updated to {new_status}. Processing notification email.", "success")
             
     return redirect(url_for('admin_dashboard'))
@@ -294,12 +279,7 @@ def reply_support(request_id):
     admin_reply = request.form.get('admin_reply')
     
     if admin_reply:
-        msg = Message(
-            subject=f"Update regarding your {support_req.service_type} Request", 
-            recipients=[support_req.student_email]
-        )
-        
-        msg.body = (
+        email_body = (
             f"Dear {support_req.student_name},\n\n"
             f"This is an official response from the Student Support Services Department "
             f"regarding your recent request for {support_req.service_type}.\n\n"
@@ -312,8 +292,9 @@ def reply_support(request_id):
             f"Twifo Hemang Shalom School"
         )
         
-        # Hand off support response to the async background thread
-        Thread(target=send_async_email, args=(app, msg)).start()
+        email_subject = f"Update regarding your {support_req.service_type} Request"
+        Thread(target=send_async_email, args=(support_req.student_email, email_subject, email_body)).start()
+        
         support_req.status = 'Resolved'
         db.session.commit()
         flash(f"Reply successfully processing! Notification email dispatched to {support_req.student_name}.", "success")
@@ -328,22 +309,10 @@ def admin_logout():
 @app.route('/support', methods=['GET', 'POST'])
 def support():
     services = [
-        {
-            "name": "Academic Tutoring & Peer Mentorship", 
-            "description": "One-on-one help with core subjects like Mathematics, Integrated Science, and English Language."
-        },
-        {
-            "name": "Guidance & Psychological Counseling", 
-            "description": "Confidential personal counseling, emotional check-ins, and stress management workshops."
-        },
-        {
-            "name": "University & Career Placement Support", 
-            "description": "Assistance with university applications, scholarship essays, and career pathway advice."
-        },
-        {
-            "name": "Campus Health & Medical Services", 
-            "description": "24/7 care provided by our campus infirmary staff for student physical wellness."
-        }
+        {"name": "Academic Tutoring & Peer Mentorship", "description": "One-on-one help with core subjects like Mathematics, Integrated Science, and English Language."},
+        {"name": "Guidance & Psychological Counseling", "description": "Confidential personal counseling, emotional check-ins, and stress management workshops."},
+        {"name": "University & Career Placement Support", "description": "Assistance with university applications, scholarship essays, and career pathway advice."},
+        {"name": "Campus Health & Medical Services", "description": "24/7 care provided by our campus infirmary staff for student physical wellness."}
     ]
     
     if request.method == 'POST':
@@ -359,9 +328,7 @@ def support():
         
     return render_template('support.html', services=services)
 
-
 # --- Smart Chat API Route Using Gemini 2.5 Flash ---
-
 @app.route('/api/chat', methods=['POST'])
 def chat_api():
     user_data = request.json or {}
@@ -369,19 +336,14 @@ def chat_api():
 
     if not user_message:
         return jsonify({"reply": "I didn't catch that."})
-        
     elif "<script>" in user_message.lower():
-        return jsonify({"reply": "I am unable to execute or parse code scripts. How can I help you with school information today?"})
+        return jsonify({"reply": "I am unable to execute or parse code scripts. How can I help you today?"})
     
     try:
         system_instruction = (
             "You are the polite, welcoming, and official AI Assistant for Twifo Hemang Shalom School.\n"
             "Your main objective is to answer user queries accurately using the verified school context provided below.\n"
-            "Always give a direct, natural text answer based on this context. For example, if the user asks for 'Location' "
-            "or 'where are you located', extract the physical location details from the context and reply with a complete sentence.\n"
-            "If a user says something general like 'Hi' or 'How are you?', respond politely using standard social courtesy.\n"
-            "If a question cannot be answered by the context, politely inform the user that you don't have that specific record "
-            "and suggest contacting the administrative office directly.\n\n"
+            "Always give a direct, natural text answer based on this context.\n\n"
             f"OFFICIAL SCHOOL CONTEXT:\n{school_context}"
         )
         
@@ -393,12 +355,10 @@ def chat_api():
                 temperature=0.3, 
             ),
         )
-        
         ai_reply = response.text.strip()
-        
     except Exception as e:
         print(f"Gemini Engine Infrastructure Failure Trace: {str(e)}")
-        ai_reply = "I ran into a small configuration issue while processing that request. Please try again or email admin."
+        ai_reply = "I ran into a small configuration issue while processing that request. Please try again later."
 
     return jsonify({"reply": ai_reply})
 
