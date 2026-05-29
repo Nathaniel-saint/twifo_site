@@ -4,6 +4,7 @@ from flask_mail import Mail, Message
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename 
+from threading import Thread # <-- Added for background email handling
 
 # 1. Import the dotenv loader extension
 from dotenv import load_dotenv
@@ -55,11 +56,11 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# --- Outbound Mail Service Configs ---
+# --- Outbound Mail Service Configs (Updated for Production Stability) ---
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'            
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_PORT'] = 587                           # Changed from 465 to 587
+app.config['MAIL_USE_TLS'] = True                       # Swapped from False to True
+app.config['MAIL_USE_SSL'] = False                      # Swapped from True to False
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'caddaemarfo13@gmail.com')
 app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
 app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', app.config['MAIL_USERNAME'])
@@ -67,6 +68,15 @@ app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', app.config['M
 # Initialize active infrastructure extensions
 db = SQLAlchemy(app)
 mail = Mail(app)
+
+# --- Background Email Worker ---
+def send_async_email(flask_app, message):
+    """Sends email tasks inside an independent background thread context."""
+    with flask_app.app_context():
+        try:
+            mail.send(message)
+        except Exception as e:
+            print(f"Background Email Service Error Log: {str(e)}")
 
 # --- Relational Database Schema Models ---
 class Application(db.Model):
@@ -115,7 +125,6 @@ school_context = load_school_knowledge_context()
 @app.route('/')
 def home():
     all_posts = NewsPost.query.order_by(NewsPost.id.desc()).all()
-    # Note: If your HTML file is named 'home.html', change 'index.html' to 'home.html' below
     return render_template('index.html', posts=all_posts)
 
 @app.route('/about')
@@ -183,7 +192,6 @@ def admin_login():
     """Explicit login route protecting dashboard initialization."""
     if request.method == 'POST':
         admin_pass = request.form.get('password')
-        # Safely checks environment variable with a local fallback option
         secure_admin_password = os.environ.get('ADMIN_DASHBOARD_PASSWORD', 'Robert_Chritiana@THS')
         
         if admin_pass == secure_admin_password:
@@ -240,41 +248,40 @@ def update_application_status(app_id, new_status):
         
         full_name = f"{applicant.first_name} {applicant.last_name}"
         
-        try:
-            msg = Message(
-                subject=f"Admission Application Update - #THS{applicant.id}", 
-                recipients=[applicant.email]
+        msg = Message(
+            subject=f"Admission Application Update - #THS{applicant.id}", 
+            recipients=[applicant.email]
+        )
+        
+        if new_status == 'Approved':
+            msg.body = (
+                f"Dear {full_name},\n\n"
+                f"Congratulations! We are pleased to inform you that your admission application to "
+                f"Twifo Hemang Shalom School has been APPROVED.\n\n"
+                f"Our admissions office will reach out to you within 3 business days with your "
+                f"formal admission letter, uniform measurements information, and fee details.\n\n"
+                f"Welcome to our vibrant community!\n\n"
+                f"Warm regards,\n"
+                f"Admissions Board\n"
+                f"Twifo Hemang Shalom School"
+            )
+        else:
+            msg.body = (
+                f"Dear {full_name},\n\n"
+                f"Thank you for your interest in joining Twifo Hemang Shalom School.\n\n"
+                f"After careful review of our enrollment capacity limitations for the upcoming term, "
+                f"we regret to inform you that we are unable to offer you a spot at this time.\n\n"
+                f"We keep all profiles on file for one academic year should any unexpected vacancies arise.\n\n"
+                f"We wish you the very best in your academic pursuits.\n\n"
+                f"Sincerely,\n"
+                f"Admissions Board\n"
+                f"Twifo Hemang Shalom School"
             )
             
-            if new_status == 'Approved':
-                msg.body = (
-                    f"Dear {full_name},\n\n"
-                    f"Congratulations! We are pleased to inform you that your admission application to "
-                    f"Twifo Hemang Shalom School has been APPROVED.\n\n"
-                    f"Our admissions office will reach out to you within 3 business days with your "
-                    f"formal admission letter, uniform measurements information, and fee details.\n\n"
-                    f"Welcome to our vibrant community!\n\n"
-                    f"Warm regards,\n"
-                    f"Admissions Board\n"
-                    f"Twifo Hemang Shalom School"
-                )
-            else:
-                msg.body = (
-                    f"Dear {full_name},\n\n"
-                    f"Thank you for your interest in joining Twifo Hemang Shalom School.\n\n"
-                    f"After careful review of our enrollment capacity limitations for the upcoming term, "
-                    f"we regret to inform you that we are unable to offer you a spot at this time.\n\n"
-                    f"We keep all profiles on file for one academic year should any unexpected vacancies arise.\n\n"
-                    f"We wish you the very best in your academic pursuits.\n\n"
-                    f"Sincerely,\n"
-                    f"Admissions Board\n"
-                    f"Twifo Hemang Shalom School"
-                )
-                
-            mail.send(msg)
-            flash(f"Success! Applicant #{applicant.id} status set to {new_status} and official letter emailed.", "success")
-        except Exception:
-            flash(f"Database updated to {new_status}, but email delivery failed. Verify your network or SMTP setup.", "error")
+        # Hand off the sending operation to an async background thread 
+        # This keeps the browser from locking up or throwing a 504 error!
+        Thread(target=send_async_email, args=(app, msg)).start()
+        flash(f"Success! Applicant #{applicant.id} status updated to {new_status}. Processing notification email.", "success")
             
     return redirect(url_for('admin_dashboard'))
 
@@ -287,31 +294,29 @@ def reply_support(request_id):
     admin_reply = request.form.get('admin_reply')
     
     if admin_reply:
-        try:
-            msg = Message(
-                subject=f"Update regarding your {support_req.service_type} Request", 
-                recipients=[support_req.student_email]
-            )
-            
-            msg.body = (
-                f"Dear {support_req.student_name},\n\n"
-                f"This is an official response from the Student Support Services Department "
-                f"regarding your recent request for {support_req.service_type}.\n\n"
-                f"Message from Administration:\n"
-                f"{admin_reply}\n\n"
-                f"If you have further questions, please feel free to reply to this email "
-                f"or visit our office.\n\n"
-                f"Warm regards,\n"
-                f"Support Team\n"
-                f"Twifo Hemang Shalom School"
-            )
-            
-            mail.send(msg)
-            support_req.status = 'Resolved'
-            db.session.commit()
-            flash(f"Reply successfully emailed to {support_req.student_name}!", "success")
-        except Exception as e:
-            flash(f"Failed to send email: {str(e)}", "error")
+        msg = Message(
+            subject=f"Update regarding your {support_req.service_type} Request", 
+            recipients=[support_req.student_email]
+        )
+        
+        msg.body = (
+            f"Dear {support_req.student_name},\n\n"
+            f"This is an official response from the Student Support Services Department "
+            f"regarding your recent request for {support_req.service_type}.\n\n"
+            f"Message from Administration:\n"
+            f"{admin_reply}\n\n"
+            f"If you have further questions, please feel free to reply to this email "
+            f"or visit our office.\n\n"
+            f"Warm regards,\n"
+            f"Support Team\n"
+            f"Twifo Hemang Shalom School"
+        )
+        
+        # Hand off support response to the async background thread
+        Thread(target=send_async_email, args=(app, msg)).start()
+        support_req.status = 'Resolved'
+        db.session.commit()
+        flash(f"Reply successfully processing! Notification email dispatched to {support_req.student_name}.", "success")
             
     return redirect(url_for('admin_dashboard'))
 
