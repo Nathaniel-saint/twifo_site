@@ -2,50 +2,63 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
-import numpy as np
 from datetime import datetime
-from sentence_transformers import SentenceTransformer, util
-from werkzeug.utils import secure_filename  # 🌟 Added for secure file handling
+from werkzeug.utils import secure_filename 
+
+# Official Google GenAI Client
+from google import genai
+from google.genai import types
 
 app = Flask(__name__)
 
-# --- System Security & Database Configs ---
-app.config['SECRET_KEY'] = 'ths_secret_admin_key_2026'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
+# --- Production Environment Security Control & Initialization ---
+# Enforce strict variable verification on runtime environment initialization.
+# This prevents the container from starting up if secret keys are missing.
+SECRET_KEY = os.environ.get('SECRET_KEY')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///school.db')
+
+if not SECRET_KEY or not GEMINI_API_KEY or not MAIL_PASSWORD:
+    raise RuntimeError(
+        "CRITICAL STARTUP ERROR: Missing vital infrastructure environment keys! "
+        "Ensure SECRET_KEY, GEMINI_API_KEY, and MAIL_PASSWORD are configured in the host environment configuration dashboard."
+    )
+
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- 🌟 New File Upload Directory & Verification Controls ---
+# --- File Upload Configuration Restrictions ---
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'png', 'jpg', 'jpeg'}
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB file restrictions
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Strict 5MB Ceiling Limit
 
-# Generate storage path folder automatically if missing
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-
-# --- SMTP Outbound Mail Server Configs ---
+# --- Outbound Mail Service Configs ---
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'            
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = 'naddaemarfo18@gmail.com' 
-app.config['MAIL_PASSWORD'] = 'ecbkbahjnlagimzm' 
-app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', 'naddaemarfo18@gmail.com')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'naddaemarfo18@gmail.com')
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
+app.config['MAIL_DEFAULT_SENDER'] = ('Twifo Hemang Shalom School', app.config['MAIL_USERNAME'])
 
-# Initialize extensions
+# Initialize active infrastructure extensions
 db = SQLAlchemy(app)
 mail = Mail(app)
 
-# --- Database Models ---
+# --- Relational Database Schema Models ---
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), nullable=False)
-    document_file = db.Column(db.String(200), nullable=True)  # 🌟 Tracks saved filename string
+    document_file = db.Column(db.String(200), nullable=True)  
     status = db.Column(db.String(20), default='Pending')
 
 class SupportRequest(db.Model):
@@ -65,20 +78,23 @@ class NewsPost(db.Model):
 with app.app_context():
     db.create_all()
 
-# --- Semantic AI Setup ---
-model = SentenceTransformer('all-MiniLM-L6-v2')
+# --- Google Gemini Engine Core Instantiation ---
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-def load_knowledge_base():
+def load_school_knowledge_context():
+    """Reads the local knowledge base text file securely as a context block."""
     if not os.path.exists('school_data.txt'):
-        return ["Welcome to Twifo Hemang Shalom School! How can we assist you today?"]
+        return (
+            "Twifo Hemang Shalom School was founded in 2004. It is dedicated to academic excellence, "
+            "holistic growth, and deep moral uprightness. Founders and proprietors are Rev. Dr. Robert Yaw Owusu (PhD) "
+            "and Mrs. Christiana Owusu. The school is located in the Central Region of Ghana."
+        )
     with open('school_data.txt', 'r', encoding='utf-8') as f:
-        return [line.strip() for line in f.readlines() if line.strip()]
+        return f.read().strip()
 
-knowledge_base = load_knowledge_base()
-knowledge_embeddings = model.encode(knowledge_base, convert_to_tensor=True)
+school_context = load_school_knowledge_context()
 
-
-# --- Core Web Page Routes ---
+# --- Public Navigation Web Routes ---
 
 @app.route('/')
 def home():
@@ -123,16 +139,15 @@ def admissions():
         lname = request.form.get('lastname')
         u_email = request.form.get('email')
         
-        # 🌟 Dynamic Processing of Uploaded File
         uploaded_file = request.files.get('document')
         filename_to_save = None
         
         if uploaded_file and uploaded_file.filename != '':
             if allowed_file(uploaded_file.filename):
                 safe_filename = secure_filename(uploaded_file.filename)
-                # Apply timestamp prefixing mechanism to avoid duplication overwrite crashes
+                # Production mitigation strategy: Append unique randomized hash IDs to prevent collisions
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                filename_to_save = f"{timestamp}_{safe_filename}"
+                filename_to_save = f"{timestamp}_{os.urandom(4).hex()}_{safe_filename}"
                 uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_to_save))
             else:
                 flash("Invalid file attachment format! Only PDF, PNG, and JPG documents are accepted.", "error")
@@ -145,15 +160,24 @@ def admissions():
     return render_template('admissions.html', success=False)
 
 
-# --- Secure Admin Panel Dashboard Routes ---
+# --- Secure Production-Hardened Admin Controls ---
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Explicit login route protecting dashboard initialization."""
+    if request.method == 'POST':
+        # Recommended: Map these verification elements to specialized database user validation fields
+        admin_pass = request.form.get('password')
+        if admin_pass == os.environ.get('ADMIN_DASHBOARD_PASSWORD', 'fallback_secure_password_here'):
+            session['is_admin'] = True
+            return redirect(url_for('admin_dashboard'))
+        flash("Invalid administrator access credentials entered.", "error")
+    return render_template('admin_login.html')
+
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    url_key = request.args.get('key')
-    if url_key == 'shalom2026':
-        session['is_admin'] = True
-
     if not session.get('is_admin'):
-        return redirect(url_for('home'))
+        return redirect(url_for('admin_login'))
         
     all_applications = Application.query.all()
     all_support_requests = SupportRequest.query.all()
@@ -164,7 +188,7 @@ def admin_dashboard():
 @app.route('/admin/add_news', methods=['POST'])
 def add_news():
     if not session.get('is_admin'):
-        return "Unauthorized Access Denied", 403
+        return jsonify({"error": "Unauthorized Access Denied"}), 403
     p_title = request.form.get('title')
     p_content = request.form.get('content')
     if p_title and p_content:
@@ -173,22 +197,22 @@ def add_news():
         db.session.add(new_post)
         db.session.commit()
         flash("News announcement successfully published to the live public noticeboard!", "success")
-    return redirect(url_for('admin_dashboard', key='shalom2026'))
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/delete_news/<int:post_id>')
 def delete_news(post_id):
     if not session.get('is_admin'):
-        return "Unauthorized Access Denied", 403
+        return jsonify({"error": "Unauthorized Access Denied"}), 403
     post = NewsPost.query.get_or_404(post_id)
     db.session.delete(post)
     db.session.commit()
     flash("Announcement removed from the noticeboard.", "success")
-    return redirect(url_for('admin_dashboard', key='shalom2026'))
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/update_status/<int:app_id>/<string:new_status>')
 def update_application_status(app_id, new_status):
     if not session.get('is_admin'):
-        return "Unauthorized Access Denied", 403
+        return jsonify({"error": "Unauthorized Access Denied"}), 403
         
     applicant = Application.query.get_or_404(app_id)
     
@@ -196,7 +220,6 @@ def update_application_status(app_id, new_status):
         applicant.status = new_status
         db.session.commit()
         
-        # Build the dynamic full name string
         full_name = f"{applicant.first_name} {applicant.last_name}"
         
         try:
@@ -235,12 +258,12 @@ def update_application_status(app_id, new_status):
         except Exception:
             flash(f"Database updated to {new_status}, but email delivery failed. Verify your network or SMTP setup.", "error")
             
-    return redirect(url_for('admin_dashboard', key='shalom2026'))
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/reply_support/<int:request_id>', methods=['POST'])
 def reply_support(request_id):
     if not session.get('is_admin'):
-        return "Unauthorized Access Denied", 403
+        return jsonify({"error": "Unauthorized Access Denied"}), 403
         
     support_req = SupportRequest.query.get_or_404(request_id)
     admin_reply = request.form.get('admin_reply')
@@ -252,7 +275,6 @@ def reply_support(request_id):
                 recipients=[support_req.student_email]
             )
             
-            # 🌟 Wrapping the admin's custom note inside your polished template 🌟
             msg.body = (
                 f"Dear {support_req.student_name},\n\n"
                 f"This is an official response from the Student Support Services Department "
@@ -273,7 +295,7 @@ def reply_support(request_id):
         except Exception as e:
             flash(f"Failed to send email: {str(e)}", "error")
             
-    return redirect(url_for('admin_dashboard', key='shalom2026'))
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/logout')
 def admin_logout():
@@ -314,44 +336,49 @@ def support():
         
     return render_template('support.html', services=services)
 
+
+# --- Smart Chat API Route Using Gemini 2.5 Flash ---
+
 @app.route('/api/chat', methods=['POST'])
 def chat_api():
     user_data = request.json or {}
     user_message = user_data.get('message', '').strip()
-    
-    # 1. Catch missing or blank messages safely
-    if not user_message:
-        return jsonify({"reply": "I didn't catch that. Could you please rephrase your question?"})
-    
-    # 2. Expanded lowercase conversational greeting checks
-    greetings = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening']
-    if user_message.lower().rstrip('!?.') in greetings:
-        return jsonify({"reply": "Hello! I am the Twifo Hemang Shalom School AI Assistant. How can I help you today?"})
-        
-    # 3. Crash protection check to ensure the knowledge base loaded correctly
-    if not knowledge_base or len(knowledge_embeddings) == 0:
-        return jsonify({"reply": "Our school information database is currently undergoing maintenance. Please reach out directly via email to admin."})
 
+    if not user_message:
+        return jsonify({"reply": "I didn't catch that."})
+        
+    # XSS Injection mitigation filtering strategy
+    elif "<script>" in user_message.lower():
+        return jsonify({"reply": "I am unable to execute or parse code scripts. How can I help you with school information today?"})
+    
     try:
-        # 4. Generate query vector matching arrays
-        query_embedding = model.encode(user_message, convert_to_tensor=True)
-        cos_scores = util.cos_sim(query_embedding, knowledge_embeddings)[0]
+        # Construct explicit system operational directions
+        system_instruction = (
+            "You are the polite, welcoming, and official AI Assistant for Twifo Hemang Shalom School.\n"
+            "Your main objective is to answer user queries accurately using the verified school context provided below.\n"
+            "Always give a direct, natural text answer based on this context. For example, if the user asks for 'Location' "
+            "or 'where are you located', extract the physical location details from the context and reply with a complete sentence.\n"
+            "If a user says something general like 'Hi' or 'How are you?', respond politely using standard social courtesy.\n"
+            "If a question cannot be answered by the context, politely inform the user that you don't have that specific record "
+            "and suggest contacting the administrative office directly.\n\n"
+            f"OFFICIAL SCHOOL CONTEXT:\n{school_context}"
+        )
         
-        # 5. Safely isolate the highest scoring vector index
-        scores_numpy = cos_scores.cpu().numpy()
-        best_match_idx = int(np.argmax(scores_numpy))
-        highest_score = float(scores_numpy[best_match_idx])
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=user_message,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                temperature=0.3, # Keeps answers anchored and structurally factual
+            ),
+        )
         
-        # 6. Apply your semantic confidence threshold check (0.35)
-        if highest_score > 0.35:
-            ai_reply = knowledge_base[best_match_idx]
-        else:
-            ai_reply = "I'm sorry, I couldn't find a direct answer to that in our school database. Please email our administration office or visit us during working hours for assistance."
-            
+        ai_reply = response.text.strip()
+        
     except Exception as e:
-        # Fallback logging to ensure the backend app never crashes live
-        print(f"Chat API Processing Error: {str(e)}")
-        ai_reply = "I'm having trouble retrieving that information right now. Please try again or email admin."
+        # Soft error handling logic masking explicit exception traces to users
+        print(f"Gemini Engine Infrastructure Failure Trace: {str(e)}")
+        ai_reply = "I ran into a small configuration issue while processing that request. Please try again or email admin."
 
     return jsonify({"reply": ai_reply})
 

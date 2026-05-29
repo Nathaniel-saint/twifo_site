@@ -1,0 +1,65 @@
+{% extends 'base.html' %}{% block content %}
+<section style="max-width: 450px; margin: 60px auto; padding: 20px; box-sizing: border-box;">
+    
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="color: var(--color-blue); margin: 0 0 8px 0; font-weight: 800; letter-spacing: 0.5px;">
+            Administrative Portal
+        </h2>
+        <p style="color: #64748b; margin: 0; font-size: 0.95rem;">
+            Authorized staff access terminal
+        </p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 12px 15px; margin-bottom: 20px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;
+                    background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}\
+    {% endwith %}
+
+    <form action="{{ url_for('admin_login') }}" method="POST" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 20px;">
+        
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: bold; color: var(--color-blue); font-size: 0.9rem; letter-spacing: 0.3px;">
+                ADMINISTRATOR ACCESS KEY
+            </label>
+            <div style="position: relative;">
+                <input type="password" name="password" required autofocus placeholder="Enter master security password..." 
+                       style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; box-sizing: border-box; outline: none; transition: border-color 0.2s, box-shadow 0.2s;" 
+                       onfocus="this.style.borderColor='var(--color-blue)'; this.style.boxShadow='0 0 0 3px rgba(26,48,90,0.1)';" 
+                       onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';">
+            </div>
+        </div>
+
+        <button type="submit" style="background-color: var(--color-blue); color: #ffffff; border: none; padding: 13px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background-color 0.2s, transform 0.1s; margin-top: 5px;"
+                onmouseover="this.style.backgroundColor='#132443'" 
+                onmouseout="this.style.backgroundColor='var(--color-blue)'"
+                onmousedown="this.style.transform='scale(0.98)'"
+                onmouseup="this.style.transform='scale(1)'">
+            Verify & Open Dashboard
+        </button>
+
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('home') }}" style="color: var(--color-blue); text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;"
+           onmouseover="this.style.color='var(--color-gold)'" onmouseout="this.style.color='var(--color-blue)'">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Return to Main Website
+        </a>
+    </div>
+
+</section>
+{% endblock %}
