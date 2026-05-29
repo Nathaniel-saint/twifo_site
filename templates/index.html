@@ -50,7 +50,7 @@
         </div>
         <div style="display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.95rem;">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            <span>Phone: <a href="tel:+233244123456" style="color: #334155; text-decoration: none; font-weight: bold;">+233 (0) 24 412 3456</a></span>
+            <span>Phone: <a href="tel:+233530554141" style="color: #334155; text-decoration: none; font-weight: bold;">+233 (0) 53 055 4141</a></span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.95rem;">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -162,7 +162,7 @@
     const dots = document.querySelectorAll('.dot');
 
     function showSlide(index) {
-        // Prevent out-of-bounds by wrapping around infinitely
+        if (slides.length === 0) return;
         if (index >= slides.length) {
             currentSlideIndex = 0;
         } else if (index < 0) {
@@ -171,29 +171,23 @@
             currentSlideIndex = index;
         }
 
-        // Strip the active classes from all items
         slides.forEach(slide => slide.classList.remove('active'));
         dots.forEach(dot => dot.classList.remove('active'));
 
-        // Apply active classes to reveal the targeted slide and dot element
         slides[currentSlideIndex].classList.add('active');
-        dots[currentSlideIndex].classList.add('active');
+        if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.add('active');
     }
 
-    // Handles arrow navigation clicks (e.g., -1 or 1)
     function changeSlide(direction) {
         showSlide(currentSlideIndex + direction);
     }
 
-    // Handles direct indicator dot navigation clicks
     function currentSlide(index) {
         showSlide(index);
     }
 
-    // Automatically transitions to the next slide every 5 seconds
     setInterval(() => {
         changeSlide(1);
     }, 5000);
 </script>
-
 {% endblock %}
