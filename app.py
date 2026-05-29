@@ -11,28 +11,29 @@ from google.genai import types
 
 app = Flask(__name__)
 
-# --- Production Environment Security Control & Initialization ---
-# Enforce strict variable verification on runtime environment initialization.
-# This prevents the container from starting up if secret keys are missing.
+# --- System Security & Production Database Configs ---
 SECRET_KEY = os.environ.get('SECRET_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///school.db')
 
+# Production check: default to standard path if running locally
 if not SECRET_KEY or not GEMINI_API_KEY or not MAIL_PASSWORD:
-    raise RuntimeError(
-        "CRITICAL STARTUP ERROR: Missing vital infrastructure environment keys! "
-        "Ensure SECRET_KEY, GEMINI_API_KEY, and MAIL_PASSWORD are configured in the host environment configuration dashboard."
-    )
+    raise RuntimeError("CRITICAL STARTUP ERROR: Missing vital infrastructure environment keys!")
 
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- File Upload Configuration Restrictions ---
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'png', 'jpg', 'jpeg'}
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Strict 5MB Ceiling Limit
+# Determine if we are running live on Railway by checking the volume folder path
+if os.path.exists('/app/static/uploads'):
+    # In production on Railway, place the live database inside the persistent volume disk!
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////app/static/uploads/school.db'
+    app.config['UPLOAD_FOLDER'] = '/app/static/uploads'
+else:
+    # Local Development Fallback
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
+    app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB file restrictions
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 

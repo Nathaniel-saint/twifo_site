@@ -1,0 +1,24 @@
+# Local Private Environment Keys
+.env
+
+# Databases and Local Storage Volumes
+*.db
+instance/
+static/uploads/*
+
+# Keep the uploads folder structure but ignore its contents
+!static/uploads/.gitkeep
+
+# Python Caching & Virtual Environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+env/
+venv/
+.venv/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
