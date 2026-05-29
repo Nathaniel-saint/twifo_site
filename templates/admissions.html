@@ -1,27 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section style="padding: 40px; max-width: 600px; margin: 0 auto; box-sizing: border-box;">
-    <h2>Apply Now</h2>
-    <p>Fill out the form below to begin the admission process at Twifo Hemang Shalom School.</p>
+<section style="max-width: 600px; margin: 0 auto; box-sizing: border-box; padding: 40px 20px;">
+    <h2 style="color: var(--color-blue); margin-top: 0; font-weight: 800;">Apply Now</h2>
+    <p style="color: #475569; margin-bottom: 25px; line-height: 1.5;">Fill out the form below to begin the admission process at Twifo Hemang Shalom School.</p>
 
     {% if success %}
-    <div style="background-color: #d1e7dd; color: #0f5132; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #badbcc; font-weight: bold;">
+    <div style="background-color: #d1e7dd; color: #0f5132; padding: 15px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #badbcc; font-weight: bold; line-height: 1.4;">
         ✓ Your application has been securely submitted! Our admissions office will review your details shortly.
     </div>
     {% endif %}
 
-    <form action="/admissions" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-        <label style="font-weight: bold; color: var(--color-blue);">First Name:</label>
-        <input type="text" name="firstname" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+    <form action="/admissions" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: bold; color: var(--color-blue); font-size: 0.95rem;">First Name:</label>
+            <input type="text" name="firstname" required style="padding: 11px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--color-blue)'" onblur="this.style.borderColor='#cbd5e1'">
+        </div>
 
-        <label style="font-weight: bold; color: var(--color-blue);">Last Name:</label>
-        <input type="text" name="lastname" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: bold; color: var(--color-blue); font-size: 0.95rem;">Last Name:</label>
+            <input type="text" name="lastname" required style="padding: 11px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--color-blue)'" onblur="this.style.borderColor='#cbd5e1'">
+        </div>
 
-        <label style="font-weight: bold; color: var(--color-blue);">Email Address:</label>
-        <input type="email" name="email" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: bold; color: var(--color-blue); font-size: 0.95rem;">Email Address:</label>
+            <input type="email" name="email" required style="padding: 11px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--color-blue)'" onblur="this.style.borderColor='#cbd5e1'">
+        </div>
 
-        <button type="submit" class="btn-primary" style="padding: 12px; font-weight: bold; border: none; cursor: pointer; border-radius: 4px; margin-top: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: bold; color: var(--color-blue); font-size: 0.95rem;">Verification Documentation:</label>
+            <input type="file" name="document" accept=".pdf, .png, .jpg, .jpeg" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f8fafc; font-size: 0.9rem; width: 100%; box-sizing: border-box;">
+            <small style="color: #64748b; line-height: 1.4; font-size: 0.8rem; margin-top: 2px;">Upload previous report card or birth certificate. (Allowed formats: PDF, PNG, JPG | Max size: 5MB)</small>
+        </div>
+
+        <button type="submit" class="btn-primary" style="padding: 14px; font-weight: bold; border: none; cursor: pointer; border-radius: 6px; margin-top: 10px; font-size: 1rem; width: 100%; letter-spacing: 0.5px;">
             SUBMIT APPLICATION
         </button>
     </form>

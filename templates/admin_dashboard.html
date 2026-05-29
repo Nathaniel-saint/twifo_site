@@ -25,6 +25,26 @@
         </span>
     </div>
 
+    <div style="display: flex; gap: 15px; margin-bottom: 20px; background: #f1f5f9; padding: 15px; border-radius: 8px; align-items: center;">
+        <div style="flex: 2; position: relative; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="admissionsSearchInput" onkeyup="filterAdmissionsTable()" placeholder="Search applicant names or emails..." 
+                   style="width: 100%; padding: 10px 10px 10px 40px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 0.95rem;">
+        </div>
+        <div style="flex: 1;">
+            <select id="admissionsStatusFilter" onchange="filterAdmissionsTable()" 
+                    style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background-color: white; font-size: 0.95rem; height: 41px;">
+                <option value="ALL">All Status Profiles</option>
+                <option value="PENDING">Pending Only</option>
+                <option value="APPROVED">Approved Only</option>
+                <option value="DECLINED">Declined Only</option>
+            </select>
+        </div>
+    </div>
+
     {% if applications|length == 0 %}
     <p style="text-align: center; color: #666; padding: 40px; border: 1px dashed #ccc; border-radius: 6px; margin-bottom: 50px;">
         No registration application requests have been logged inside the database store yet.
@@ -37,16 +57,31 @@
                     <th style="padding: 15px;">App ID</th>
                     <th style="padding: 15px;">Full Name</th>
                     <th style="padding: 15px;">Email Address</th>
+                    <th style="padding: 15px;">Report File Document</th> 
                     <th style="padding: 15px;">Review Status</th>
                     <th style="padding: 15px; text-align: center;">Administrative Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="admissionsTableBody">
                 {% for app in applications %}
                 <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
                     <td style="padding: 15px; font-weight: bold;">#{{ app.id }}</td>
                     <td style="padding: 15px;">{{ app.first_name }} {{ app.last_name }}</td>
                     <td style="padding: 15px; color: #475569;">{{ app.email }}</td>
+                    
+                    <td style="padding: 15px;">
+                        {% if app.document_file %}
+                            <a href="{{ url_for('static', filename='uploads/' ~ app.document_file) }}" 
+                               target="_blank" download
+                                style="text-decoration: none; color: #0369a1; background: #e0f2fe; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                Open Document
+                            </a>
+                        {% else %}
+                            <span style="color: #94a3b8; font-style: italic; font-size: 0.85rem;">No attachment</span>
+                        {% endif %}
+                    </td>
+
                     <td style="padding: 15px;">
                         {% if app.status == 'Pending' %}
                             <span style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 0.8rem;">Pending</span>
@@ -74,6 +109,25 @@
         </span>
     </div>
 
+    <div style="display: flex; gap: 15px; margin-bottom: 20px; background: #f1f5f9; padding: 15px; border-radius: 8px; align-items: center;">
+        <div style="flex: 2; position: relative; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="supportSearchInput" onkeyup="filterSupportTable()" placeholder="Search student support info..." 
+                   style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; padding-left: 40px; font-size: 0.95rem;">
+        </div>
+        <div style="flex: 1;">
+            <select id="supportStatusFilter" onchange="filterSupportTable()" 
+                    style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background-color: white; font-size: 0.95rem; height: 41px;">
+                <option value="ALL">All Ticket Requests</option>
+                <option value="PENDING">Pending Tickets</option>
+                <option value="RESOLVED">Resolved Tickets</option>
+            </select>
+        </div>
+    </div>
+
     {% if support_requests|length == 0 %}
     <p style="text-align: center; color: #666; padding: 40px; border: 1px dashed #ccc; border-radius: 6px; margin-bottom: 50px;">
         No help requests have been logged inside the database store yet.
@@ -90,7 +144,7 @@
                     <th style="padding: 15px; text-align: center;">Direct Response Panel</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="supportTableBody">
                 {% for req in support_requests %}
                 <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
                     <td style="padding: 15px;">
@@ -103,16 +157,25 @@
                     <td style="padding: 15px; color: #475569; font-style: italic; line-height: 1.4;">"{{ req.message }}"</td>
                     <td style="padding: 15px; font-weight: bold;">
                         {% if req.status == 'Resolved' %}
-                            <span style="color: #16a34a; font-size: 0.9rem;">✓ Resolved</span>
+                            <span style="color: #16a34a; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Resolved
+                            </span>
                         {% else %}
-                            <span style="color: #ca8a04; font-size: 0.9rem;">⏳ Pending</span>
+                            <span style="color: #ca8a04; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Pending
+                            </span>
                         {% endif %}
                     </td>
                     <td style="padding: 15px;">
                         {% if req.status == 'Pending' %}
                             <form action="{{ url_for('reply_support', request_id=req.id) }}" method="POST" style="display: flex; flex-direction: column; gap: 8px;">
                                 <textarea name="admin_reply" placeholder="Type instructions here..." required style="width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 0.85rem; font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
-                                <button type="submit" style="background: var(--color-blue); color: white; border: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; font-weight: bold; align-self: flex-end; cursor: pointer;">✉ Send Reply</button>
+                                <button type="submit" style="background: var(--color-blue); color: white; border: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; font-weight: bold; align-self: flex-end; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    Send Reply
+                                </button>
                             </form>
                         {% else %}
                             <div style="text-align: center; color: #16a34a; font-size: 0.85rem; font-weight: bold; padding-top: 10px;">Resolution email sent.</div>
@@ -141,7 +204,10 @@
                 <label style="display:block; margin-bottom: 5px; font-weight:bold; color: #475569; font-size: 0.9rem;">Announcement Content</label>
                 <textarea name="content" rows="5" placeholder="Type official announcement information details here..." required style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-family:inherit; box-sizing:border-box; resize:vertical;"></textarea>
             </div>
-            <button type="submit" style="background: #22c55e; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">📢 Broadcast Notice</button>
+            <button type="submit" style="background: #22c55e; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                Broadcast Notice
+            </button>
         </form>
 
         <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; max-height: 410px; overflow-y: auto;">
@@ -155,11 +221,58 @@
                             <strong style="color: #1e293b; display: block;">{{ post.title }}</strong>
                             <small style="color: #94a3b8;">{{ post.date_posted }}</small>
                         </div>
-                        <a href="{{ url_for('delete_news', post_id=post.id) }}" onclick="return confirm('Archive this notice?');" style="color: #ef4444; background: #fee2e2; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; text-decoration: none; font-weight: bold;">✕ Delete</a>
+                        <a href="{{ url_for('delete_news', post_id=post.id) }}" onclick="return confirm('Archive this notice?');" style="color: #ef4444; background: #fee2e2; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Delete
+                        </a>
                     </div>
                 {% endfor %}
             {% endif %}
         </div>
     </div>
 </section>
+
+<script>
+function filterAdmissionsTable() {
+    const textQuery = document.getElementById('admissionsSearchInput').value.toLowerCase();
+    const dropStatus = document.getElementById('admissionsStatusFilter').value.toUpperCase();
+    const rows = document.querySelectorAll('#admissionsTableBody tr');
+
+    rows.forEach(row => {
+        const nameVal = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+        const emailVal = row.cells[2] ? row.cells[2].textContent.toLowerCase() : '';
+        const statusVal = row.cells[4] ? row.cells[4].textContent.toUpperCase() : '';
+
+        const matchesText = nameVal.includes(textQuery) || emailVal.includes(textQuery);
+        const matchesStatus = (dropStatus === 'ALL') || statusVal.includes(dropStatus);
+
+        if (matchesText && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function filterSupportTable() {
+    const textQuery = document.getElementById('supportSearchInput').value.toLowerCase();
+    const dropStatus = document.getElementById('supportStatusFilter').value.toUpperCase();
+    const rows = document.querySelectorAll('#supportTableBody tr');
+
+    rows.forEach(row => {
+        const infoVal = row.cells[0] ? row.cells[0].textContent.toLowerCase() : '';
+        const deptVal = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+        const statusVal = row.cells[3] ? row.cells[3].textContent.toUpperCase() : '';
+
+        const matchesText = infoVal.includes(textQuery) || deptVal.includes(textQuery);
+        const matchesStatus = (dropStatus === 'ALL') || statusVal.includes(dropStatus);
+
+        if (matchesText && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
 {% endblock %}

@@ -1,28 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="hero-slideshow">
-    <div class="slide active" style="background-image: url('{{ url_for('static', filename='images/logo.jpeg') }}');">
+<div class="hero-slideshow" style="position: relative; overflow: hidden; background-color: #1e293b;">
+    <div class="slide active" style="background-image: url('{{ url_for('static', filename='images/logo.jpeg') }}'); background-size: cover; background-position: center;">
         <div class="gallery-overlay">
-            <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">DISCOVER OUR VIBRANT COMMUNITY</h1>
-            <p>Fostering academic excellence and holistic child development.</p>
+            <h1 style="margin: 0 0 12px 0; letter-spacing: 1.5px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">DISCOVER OUR VIBRANT COMMUNITY</h1>
+            <p style="font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Fostering academic excellence and holistic child development.</p>
         </div>
     </div>
-    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide2.jpeg') }}');">
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide2.jpeg') }}'); background-size: cover; background-position: center;">
         <div class="gallery-overlay">
-            <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">JOIN US FOR THE VIBRANT SEMESTER</h1>
-            <p>Explore our diverse extracurricular events, clubs, and sports programs.</p>
+            <h1 style="margin: 0 0 12px 0; letter-spacing: 1.5px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">JOIN US FOR THE VIBRANT SEMESTER</h1>
+            <p style="font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Explore our diverse extracurricular events, clubs, and sports programs.</p>
         </div>
     </div>
-    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide1.png') }}');">
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide1.png') }}'); background-size: cover; background-position: center;">
         <div class="gallery-overlay">
-            <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">JOIN US FOR THE NEXT SEMESTER</h1>
-            <p>Admissions are currently open. Apply online today to secure a spot.</p>
+            <h1 style="margin: 0 0 12px 0; letter-spacing: 1.5px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">JOIN US FOR THE NEXT SEMESTER</h1>
+            <p style="font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Admissions are currently open. Apply online today to secure a spot.</p>
         </div>
     </div>
 
-    <button class="slide-nav prev" onclick="changeSlide(-1)">&lt;</button>
-    <button class="slide-nav next" onclick="changeSlide(1)">&gt;</button>
+    <button class="slide-nav prev" onclick="changeSlide(-1)" aria-label="Previous Slide" style="display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="slide-nav next" onclick="changeSlide(1)" aria-label="Next Slide" style="display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
 
     <div class="slide-dots">
         <span class="dot active" onclick="currentSlide(0)"></span>
@@ -31,35 +35,69 @@
     </div>
 </div>
 
-<section style="padding: 50px 20px 20px 20px; max-width: 900px; margin: 0 auto;">
-    <div style="background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-left: 6px solid var(--color-gold); text-align: left;">
-        <h2 style="color: var(--color-blue); font-size: 2.2rem; margin-top: 0; margin-bottom: 25px; letter-spacing: 0.5px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-transform: uppercase;">President's Message</h2>
-        <p style="line-height: 1.8; color: #334155; font-size: 1.1rem; margin-bottom: 20px; font-weight: 500;">Welcome to Twifo Hemang Shalom School.</p>
-        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 20px;">At the core of everything we do is our foundational belief: <strong style="color: var(--color-blue);">Nurturing for Excellence</strong>. We understand that true excellence is not achieved by chance; it is carefully cultivated. That is why we are dedicated to providing a serene, inspiring, and rigorous environment where students feel safe to discover their unique strengths, challenge their minds, and step into their potential as future leaders.</p>
-        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 25px;">Our exceptional faculty members do more than teach, they mentor, guide, and inspire. By balancing strong academic fundamentals with creative extracurricular endeavors, we ensure that every child leaves our halls prepared to make a meaningful impact on the global stage.</p>
-        <p style="line-height: 1.8; color: var(--color-blue); font-size: 1.1rem; font-style: italic; font-weight: 600; margin-bottom: 0; background: #f8fafc; padding: 15px 20px; border-radius: 6px; border-right: 3px solid var(--color-gold);">"Thank you for trusting us with your child's educational journey. Together, let us cultivate a generation driven by character, wisdom, and exceptional achievement."</p>
+<section style="padding: 60px 20px 30px 20px; max-width: 900px; margin: 0 auto;">
+    <div style="background: #ffffff; padding: 45px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border-left: 6px solid var(--color-gold); text-align: left;">
+        <h2 style="color: var(--color-blue); font-size: 2.2rem; margin-top: 0; margin-bottom: 25px; letter-spacing: 0.5px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-transform: uppercase; font-weight: 800;">President's Message</h2>
+        
+        <p style="line-height: 1.8; color: #1e293b; font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; letter-spacing: -0.2px;">
+            Welcome to Twifo Hemang Shalom School.
+        </p>
+        
+        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 20px;">
+            At the core of everything we do is our foundational belief: <strong style="color: var(--color-blue); font-weight: 700;">Nurturing for Excellence</strong>. We understand that true excellence is not achieved by chance; it is carefully cultivated. That is why we are dedicated to providing a serene, inspiring, and rigorous environment where students feel safe to discover their unique strengths, challenge their minds, and step into their potential as future leaders.
+        </p>
+        
+        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 30px;">
+            Our exceptional faculty members do more than teach—they mentor, guide, and inspire. By balancing strong academic fundamentals with creative extracurricular endeavors, we ensure that every child leaves our halls prepared to make a meaningful impact on the global stage.
+        </p>
+        
+        <blockquote style="line-height: 1.8; color: var(--color-blue); font-size: 1.1rem; font-style: italic; font-weight: 600; margin: 0; background: #f8fafc; padding: 20px; border-radius: 8px; border-right: 4px solid var(--color-gold);">
+            "Thank you for trusting us with your child's educational journey. Together, let us cultivate a generation driven by character, wisdom, and exceptional achievement."
+        </blockquote>
     </div>
 </section>
 
-<section style="padding: 30px 20px 60px 20px; max-width: 900px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 15px; border-bottom: 3px solid var(--color-gold); padding-bottom: 10px; margin-bottom: 35px;">
-        <span style="font-size: 1.8rem;">📢</span>
-        <h2 style="color: var(--color-blue); font-size: 1.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Official Campus Noticeboard</h2>
+<section style="padding: 30px 20px 70px 20px; max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 12px; border-bottom: 3px solid var(--color-gold); padding-bottom: 12px; margin-bottom: 35px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <h2 style="color: var(--color-blue); font-size: 1.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800;">Official Campus Noticeboard</h2>
     </div>
 
     {% if not posts %}
-        <div style="text-align: center; background: #f8fafc; border: 2px dashed #e2e8f0; padding: 40px 20px; border-radius: 12px;">
-            <p style="color: #64748b; font-style: italic; font-size: 1.05rem; margin: 0;">There are no active notices or updates posted for today. Check back soon!</p>
+        <div style="text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; padding: 50px 20px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <p style="color: #64748b; font-style: italic; font-size: 1.05rem; margin: 0; max-width: 450px; line-height: 1.5;">
+                There are no active notices or updates posted for today. Check back soon!
+            </p>
         </div>
     {% else %}
         <div style="display: flex; flex-direction: column; gap: 25px;">
             {% for post in posts %}
-                <div style="background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; padding: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px dashed #f1f5f9; padding-bottom: 10px;">
-                        <h3 style="color: var(--color-blue); margin: 0; font-size: 1.25rem; font-weight: 700;">{{ post.title }}</h3>
-                        <span style="background: #f1f5f9; color: #475569; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; font-weight: bold; white-space: nowrap;">📅 {{ post.date_posted }}</span>
+                <div style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; padding: 25px; transition: transform 0.2s, box-shadow 0.2s;" 
+                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,0.05)';" 
+                     onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.02)';">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; gap: 15px; flex-wrap: wrap;">
+                        <h3 style="color: var(--color-blue); margin: 0; font-size: 1.3rem; font-weight: 700; line-height: 1.3;">{{ post.title }}</h3>
+                        <span style="background: #f1f5f9; color: #475569; font-size: 0.8rem; padding: 6px 14px; border-radius: 20px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e8f0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            {{ post.date_posted }}
+                        </span>
                     </div>
-                    <p style="color: #334155; line-height: 1.7; margin: 0; font-size: 1rem; white-space: pre-line;">{{ post.content }}</p>
+                    <p style="color: #334155; line-height: 1.7; margin: 0; font-size: 1.02rem; white-space: pre-line;">{{ post.content }}</p>
                 </div>
             {% endfor %}
         </div>

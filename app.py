@@ -5,6 +5,7 @@ import os
 import numpy as np
 from datetime import datetime
 from sentence_transformers import SentenceTransformer, util
+from werkzeug.utils import secure_filename  # 🌟 Added for secure file handling
 
 app = Flask(__name__)
 
@@ -12,6 +13,18 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ths_secret_admin_key_2026'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# --- 🌟 New File Upload Directory & Verification Controls ---
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'png', 'jpg', 'jpeg'}
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB file restrictions
+
+# Generate storage path folder automatically if missing
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
 
 # --- SMTP Outbound Mail Server Configs ---
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'            
@@ -32,6 +45,7 @@ class Application(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), nullable=False)
+    document_file = db.Column(db.String(200), nullable=True)  # 🌟 Tracks saved filename string
     status = db.Column(db.String(20), default='Pending')
 
 class SupportRequest(db.Model):
@@ -108,7 +122,23 @@ def admissions():
         fname = request.form.get('firstname')
         lname = request.form.get('lastname')
         u_email = request.form.get('email')
-        new_app = Application(first_name=fname, last_name=lname, email=u_email)
+        
+        # 🌟 Dynamic Processing of Uploaded File
+        uploaded_file = request.files.get('document')
+        filename_to_save = None
+        
+        if uploaded_file and uploaded_file.filename != '':
+            if allowed_file(uploaded_file.filename):
+                safe_filename = secure_filename(uploaded_file.filename)
+                # Apply timestamp prefixing mechanism to avoid duplication overwrite crashes
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename_to_save = f"{timestamp}_{safe_filename}"
+                uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_to_save))
+            else:
+                flash("Invalid file attachment format! Only PDF, PNG, and JPG documents are accepted.", "error")
+                return render_template('admissions.html', success=False)
+
+        new_app = Application(first_name=fname, last_name=lname, email=u_email, document_file=filename_to_save)
         db.session.add(new_app)
         db.session.commit()
         return render_template('admissions.html', success=True)
@@ -159,38 +189,90 @@ def delete_news(post_id):
 def update_application_status(app_id, new_status):
     if not session.get('is_admin'):
         return "Unauthorized Access Denied", 403
+        
     applicant = Application.query.get_or_404(app_id)
+    
     if new_status in ['Approved', 'Declined']:
         applicant.status = new_status
         db.session.commit()
+        
+        # Build the dynamic full name string
+        full_name = f"{applicant.first_name} {applicant.last_name}"
+        
         try:
-            msg = Message(subject=f"Admission Application Update - #THS{applicant.id}", recipients=[applicant.email])
+            msg = Message(
+                subject=f"Admission Application Update - #THS{applicant.id}", 
+                recipients=[applicant.email]
+            )
+            
             if new_status == 'Approved':
-                msg.body = f"Dear {applicant.first_name},\n\nYour application has been APPROVED."
+                msg.body = (
+                    f"Dear {full_name},\n\n"
+                    f"Congratulations! We are pleased to inform you that your admission application to "
+                    f"Twifo Hemang Shalom School has been APPROVED.\n\n"
+                    f"Our admissions office will reach out to you within 3 business days with your "
+                    f"formal admission letter, uniform measurements information, and fee details.\n\n"
+                    f"Welcome to our vibrant community!\n\n"
+                    f"Warm regards,\n"
+                    f"Admissions Board\n"
+                    f"Twifo Hemang Shalom School"
+                )
             else:
-                msg.body = f"Dear {applicant.first_name},\n\nWe regret to inform you we cannot offer you a spot."
+                msg.body = (
+                    f"Dear {full_name},\n\n"
+                    f"Thank you for your interest in joining Twifo Hemang Shalom School.\n\n"
+                    f"After careful review of our enrollment capacity limitations for the upcoming term, "
+                    f"we regret to inform you that we are unable to offer you a spot at this time.\n\n"
+                    f"We keep all profiles on file for one academic year should any unexpected vacancies arise.\n\n"
+                    f"We wish you the very best in your academic pursuits.\n\n"
+                    f"Sincerely,\n"
+                    f"Admissions Board\n"
+                    f"Twifo Hemang Shalom School"
+                )
+                
             mail.send(msg)
-            flash(f"Success! Applicant #{applicant.id} status set to {new_status} and email sent.", "success")
+            flash(f"Success! Applicant #{applicant.id} status set to {new_status} and official letter emailed.", "success")
         except Exception:
-            flash(f"Database updated to {new_status}, but email delivery failed.", "error")
+            flash(f"Database updated to {new_status}, but email delivery failed. Verify your network or SMTP setup.", "error")
+            
     return redirect(url_for('admin_dashboard', key='shalom2026'))
 
 @app.route('/admin/reply_support/<int:request_id>', methods=['POST'])
 def reply_support(request_id):
     if not session.get('is_admin'):
         return "Unauthorized Access Denied", 403
+        
     support_req = SupportRequest.query.get_or_404(request_id)
     admin_reply = request.form.get('admin_reply')
+    
     if admin_reply:
         try:
-            msg = Message(subject=f"Update regarding your {support_req.service_type} Request", recipients=[support_req.student_email])
-            msg.body = f"Dear {support_req.student_name},\n\n{admin_reply}"
+            msg = Message(
+                subject=f"Update regarding your {support_req.service_type} Request", 
+                recipients=[support_req.student_email]
+            )
+            
+            # 🌟 Wrapping the admin's custom note inside your polished template 🌟
+            msg.body = (
+                f"Dear {support_req.student_name},\n\n"
+                f"This is an official response from the Student Support Services Department "
+                f"regarding your recent request for {support_req.service_type}.\n\n"
+                f"Message from Administration:\n"
+                f"{admin_reply}\n\n"
+                f"If you have further questions, please feel free to reply to this email "
+                f"or visit our office.\n\n"
+                f"Warm regards,\n"
+                f"Support Team\n"
+                f"Twifo Hemang Shalom School"
+            )
+            
             mail.send(msg)
             support_req.status = 'Resolved'
             db.session.commit()
             flash(f"Reply successfully emailed to {support_req.student_name}!", "success")
         except Exception as e:
             flash(f"Failed to send email: {str(e)}", "error")
+            
     return redirect(url_for('admin_dashboard', key='shalom2026'))
 
 @app.route('/admin/logout')
@@ -200,7 +282,6 @@ def admin_logout():
 
 @app.route('/support', methods=['GET', 'POST'])
 def support():
-    # 🌟 RESTORE THE FULL LIST OF SERVICES FOR THE FRONTEND GRID 🌟
     services = [
         {
             "name": "Academic Tutoring & Peer Mentorship", 

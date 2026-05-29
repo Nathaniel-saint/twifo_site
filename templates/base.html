@@ -39,10 +39,15 @@
         {% endblock %}
     </main>
 
-    <div class="chat-widget" onclick="toggleChat()">
-        <span id="chat-icon">💬</span>
-        <strong style="color: var(--color-blue); margin-left: 5px;">Chat</strong>
-    </div>
+   <div class="chat-widget" onclick="toggleChat()">
+    <svg id="chat-svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block; transition: stroke 0.3s ease;">
+        <path d="M21 11.5C21 15.6421 16.9706 19 12 19C10.5135 19 9.11717 18.6946 7.87654 18.1519L3 19.5L4.51201 15.216C3.55106 14.1539 3 12.8856 3 11.5C3 7.35786 7.02944 4 12 4C16.9706 4 21 7.35786 21 11.5Z" 
+              stroke="var(--color-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 11H8.01M12 11H12.01M16 11H16.01" 
+              stroke="var(--color-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <strong style="margin-left: 8px; line-height: 1;">Chat</strong>
+</div>
 
     <div class="chat-box-container" id="chatBox">
         <div class="chat-header">

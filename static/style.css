@@ -1,11 +1,12 @@
-/* CSS Variables from Logo/Style Guide */
+/* ==========================================================================
+   1. CORE VARIABLES & GLOBAL STYLING
+   ========================================================================== */
 :root {
-    --color-blue: #1A305A; /* Deep Navy */
-    --color-gold: #D4A12B; /* Warm Gold */
+    --color-blue: #1A305A;  /* Deep Navy */
+    --color-gold: #D4A12B;  /* Warm Gold */
     --color-white: #FFFFFF;
 }
 
-/* Main Styles */
 body {
     background-color: var(--color-white);
     color: var(--color-blue);
@@ -14,7 +15,9 @@ body {
     padding: 0;
 }
 
-/* Navigation */
+/* ==========================================================================
+   2. NAVIGATION HEADER LAYOUT
+   ========================================================================== */
 header {
     background-color: var(--color-blue);
     padding: 15px 50px;
@@ -28,6 +31,33 @@ header nav a {
     text-decoration: none;
     margin: 0 15px;
     font-weight: bold;
+    position: relative;
+    transition: color 0.3s ease; 
+}
+
+header nav a:hover {
+    color: var(--color-gold); 
+}
+
+/* Sliding underline animation effect */
+header nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--color-gold);
+    transition: width 0.3s ease; 
+}
+
+header nav a:hover::after {
+    width: 100%; 
+}
+
+/* Exclude the background-colored active element from the underline animation */
+header nav a.active-link::after {
+    display: none; 
 }
 
 .active-link {
@@ -37,64 +67,17 @@ header nav a {
     border-radius: 4px;
 }
 
-/* Slideshow Specific */
+/* ==========================================================================
+   3. HERO SLIDESHOW COMPONENT
+   ========================================================================== */
 .hero-slideshow {
     position: relative;
     width: 100%;
-    height: 400px;
-    background-color: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.gallery-overlay {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: rgba(26, 48, 90, 0.7); /* Translucent Blue */
-    color: var(--color-white);
-    padding: 20px;
-    text-align: center;
-}
-
-/* Buttons */
-.btn-primary {
-    background-color: var(--color-gold);
-    color: var(--color-blue);
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* Chat Widget */
-.chat-widget {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: var(--color-gold);
-    border: 2px solid var(--color-gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* --- Slideshow Container --- */
-.hero-slideshow {
-    position: relative;
-    width: 100%;
-    height: 500px; /* Adjust height as needed */
+    height: 500px; 
     overflow: hidden;
-    background-color: #000;
+    background-color: #1e293b;
 }
 
-/* Individual Slide Configuration */
 .slide {
     position: absolute;
     top: 0;
@@ -102,35 +85,33 @@ header nav a {
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 0.8s ease-in-out; /* Smooth transition fade */
+    transition: opacity 0.8s ease-in-out; /* Smooth fade transiting */
     background-size: cover;
     background-position: center;
 }
 
-/* The active slide becomes visible */
 .slide.active {
     opacity: 1;
 }
 
-/* Overlay Design Guide Specifics */
 .gallery-overlay {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background: rgba(26, 48, 90, 0.7); /* Translucent Blue */
+    background: rgba(26, 48, 90, 0.7); /* Translucent signature blue overlay */
     color: var(--color-white);
     padding: 30px;
     text-align: center;
     box-sizing: border-box;
 }
 
-/* --- Navigation Arrows --- */
+/* Navigation Arrow Controls */
 .slide-nav {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     color: var(--color-white);
-    background: rgba(212, 161, 43, 0.5); /* Warm Gold with transparency */
+    background: rgba(212, 161, 43, 0.5); /* Semi-transparent warm gold background */
     border: none;
     padding: 15px 20px;
     font-size: 1.5rem;
@@ -147,10 +128,10 @@ header nav a {
 .slide-nav.prev { left: 20px; }
 .slide-nav.next { right: 20px; }
 
-/* --- Dot Indicators --- */
+/* Dot Nav Markers */
 .slide-dots {
     position: absolute;
-    bottom: 120px; /* Positioned right above the blue overlay text box */
+    bottom: 120px; /* Aligns neatly right over the top edge of the overlay banner text block */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -171,98 +152,39 @@ header nav a {
     background-color: var(--color-gold);
 }
 
-/* --- Link Hover Animations --- */
-header nav a {
-    position: relative;
-    transition: color 0.3s ease; /* Smooth color fade */
-}
-
-header nav a:hover {
-    color: var(--color-gold); /* Changes text to gold on hover */
-}
-
-/* The sliding underline effect */
-header nav a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -5px;
-    left: 0;
-    background-color: var(--color-gold);
-    transition: width 0.3s ease; /* Animate the width of the line */
-}
-
-header nav a:hover::after {
-    width: 100%; /* Expands the line to full width on hover */
-}
-
-/* Exclude the active link box from the underline effect */
-header nav a.active-link::after {
-    display: none; 
-}
-
-/* --- Button Hover & Click Animations --- */
+/* ==========================================================================
+   4. PRIMARY BUTTON ACTIONS
+   ========================================================================== */
 .btn-primary {
-    transition: all 0.3s ease; /* Ensure smooth transition for all button properties */
+    background-color: var(--color-gold);
+    color: var(--color-blue);
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease; 
 }
 
 .btn-primary:hover {
-    transform: translateY(-4px); /* Moves the button up slightly */
-    box-shadow: 0 6px 15px rgba(212, 161, 43, 0.4); /* Adds a golden glow shadow */
-    background-color: #e6b43b; /* Brightens the gold slightly */
+    transform: translateY(-4px); 
+    box-shadow: 0 6px 15px rgba(212, 161, 43, 0.4); 
+    background-color: #e6b43b; 
 }
 
 .btn-primary:active {
-    transform: translateY(0); /* Presses the button back down on click */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Shrinks the shadow */
+    transform: translateY(0); 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
 }
 
-/* Let's animate the chat widget too! */
-.chat-widget {
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.chat-widget:hover {
-    transform: scale(1.15) rotate(-5deg); /* Pops out and wiggles slightly */
-}
-
-/* --- Keyframe Animations for Text --- */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Apply the animation ONLY when the slide becomes active */
-.slide.active .gallery-overlay h1 {
-    animation: fadeInUp 0.8s ease-out forwards;
-    animation-delay: 0.2s; /* Slight delay before headline enters */
-    opacity: 0; /* Starts invisible */
-}
-
-.slide.active .gallery-overlay p {
-    animation: fadeInUp 0.8s ease-out forwards;
-    animation-delay: 0.4s; /* Enters slightly after the headline */
-    opacity: 0; /* Starts invisible */
-}
-
-
-/* ==========================================
-   INTERACTIVE LIVE CHAT STYLING 
-   ========================================== */
-
-/* Overriding the default floating widget slightly to support an icon alignment */
+/* ==========================================================================
+   5. INTERACTIVE LIVE CHET & SVG SYSTEM
+   ========================================================================== */
 .chat-widget {
     position: fixed;
     bottom: 25px;
     right: 25px;
     background-color: var(--color-gold);
+    color: var(--color-blue);
     padding: 12px 20px;
     border-radius: 30px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -271,9 +193,21 @@ header nav a.active-link::after {
     display: flex;
     align-items: center;
     font-size: 1rem;
+    font-weight: bold;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Main Hidden Chat Box Frame */
+.chat-widget:hover {
+    transform: scale(1.15) rotate(-5deg); 
+}
+
+/* Vector path control integration maps seamlessly with structural root color properties */
+.chat-widget #chat-svg-icon path {
+    stroke: var(--color-blue);
+    transition: stroke 0.3s ease;
+}
+
+/* Main Hidden Chat Box Frame Container */
 .chat-box-container {
     position: fixed;
     bottom: 85px;
@@ -283,20 +217,20 @@ header nav a.active-link::after {
     background-color: var(--color-white);
     border-radius: 12px;
     box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-    display: none; /* Kept hidden until 'active' class toggles */
+    display: none; 
     flex-direction: column;
     overflow: hidden;
     z-index: 1001;
     border: 1px solid #e2e8f0;
 }
 
-/* Becomes visible via JS class injection */
+/* UI trigger state handled smoothly via script inclusion injections */
 .chat-box-container.active {
     display: flex;
     animation: fadeInUp 0.3s ease-out;
 }
 
-/* Header UI Block */
+/* Chat Block Sub-Layout Elements */
 .chat-header {
     background-color: var(--color-blue);
     color: var(--color-white);
@@ -309,7 +243,7 @@ header nav a.active-link::after {
 .bot-status-dot {
     width: 8px;
     height: 8px;
-    background-color: #22c55e; /* Green online marker */
+    background-color: #22c55e; /* Live online activity signal node */
     border-radius: 50%;
 }
 
@@ -324,7 +258,6 @@ header nav a.active-link::after {
 }
 .chat-close-btn:hover { opacity: 1; }
 
-/* Message View Port Container */
 .chat-messages-body {
     flex: 1;
     padding: 15px;
@@ -335,7 +268,6 @@ header nav a.active-link::after {
     gap: 12px;
 }
 
-/* Chat Bubbles Layout */
 .message {
     max-width: 80%;
     padding: 10px 14px;
@@ -359,7 +291,6 @@ header nav a.active-link::after {
     border-top-right-radius: 2px;
 }
 
-/* Bottom Input Interface Banner */
 .chat-input-area {
     display: flex;
     border-top: 1px solid #e2e8f0;
@@ -395,20 +326,9 @@ header nav a.active-link::after {
     background-color: #24437e;
 }
 
-/* Tweak Mobile View slightly to sit elegantly over content screen widths */
-@media (max-width: 480px) {
-    .chat-box-container {
-        width: calc(100% - 40px);
-        right: 20px;
-        bottom: 80px;
-        height: 380px;
-    }
-}
-
-/* ==========================================
-   ACADEMICS ACCORDION STYLING 
-   ========================================== */
-
+/* ==========================================================================
+   6. ACADEMICS ACCORDION INTERFACES
+   ========================================================================== */
 .accordion-item {
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -444,7 +364,6 @@ header nav a.active-link::after {
     font-weight: normal;
 }
 
-/* Smooth hidden drawer logic */
 .accordion-panel {
     max-height: 0;
     overflow: hidden;
@@ -461,25 +380,47 @@ header nav a.active-link::after {
     font-size: 0.95rem;
 }
 
-/* Class added via JS toggling */
 .accordion-panel.open {
-    max-height: 200px; /* High enough threshold value to completely reveal content safely */
+    max-height: 200px; 
     padding: 5px 20px 15px 20px;
     border-top: 1px solid #e2e8f0;
 }
 
+/* ==========================================================================
+   7. CORE TRANSLATION STRUCTURAL KEYFRAMES
+   ========================================================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-/* ==========================================
-   RESPONSIVENESS & MOBILE OVERRIDES 
-   ========================================== */
+/* Text transitions switch context properties when parent element flags .active */
+.slide.active .gallery-overlay h1 {
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: 0.2s; 
+    opacity: 0; 
+}
 
-/* --- Tablet & Mobile Layouts (Screens under 768px) --- */
+.slide.active .gallery-overlay p {
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: 0.4s; 
+    opacity: 0; 
+}
+
+/* ==========================================================================
+   8. RESPONSIVENESS & MOBILE DEVISE MEDIA OVERRIDES
+   ========================================================================== */
 @media (max-width: 768px) {
-    /* Header layout changes from row to column to prevent links from squeezing */
     header {
         flex-direction: column;
-        gap: 15px;
-        padding: 15px 20px;
+        gap: 12px;           
+        padding: 15px;
         text-align: center;
     }
 
@@ -487,20 +428,27 @@ header nav a.active-link::after {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
+        gap: 12px 8px;       
+        width: 100%;
+        max-width: 580px;    
+        margin: 0 auto;
     }
 
     header nav a {
-        margin: 0 8px;
+        margin: 0 !important; 
         font-size: 0.9rem;
+        display: inline-block; 
+        line-height: 1.4;
     }
 
-    /* Reduce the hero slideshow height so it fits small displays nicely */
+    .active-link {
+        padding: 4px 10px;    
+    }
+
     .hero-slideshow {
         height: 350px;
     }
 
-    /* Scale down headline font sizes inside the slideshow */
     .gallery-overlay h1 {
         font-size: 1.4rem !important;
         letter-spacing: 0px !important;
@@ -510,7 +458,6 @@ header nav a.active-link::after {
         font-size: 0.85rem;
     }
 
-    /* Shift the slide dots layout slightly higher up */
     .slide-dots {
         bottom: 100px;
     }
@@ -520,14 +467,30 @@ header nav a.active-link::after {
         font-size: 1.2rem;
     }
 
-    /* Make padding on internal body views tighter on smaller screens */
     section {
         padding: 30px 15px !important;
     }
 }
 
-/* --- Ultra-Mobile Layouts (Phones under 480px) --- */
 @media (max-width: 480px) {
+    header {
+        padding: 12px 10px;
+        gap: 10px;
+    }
+
+    header .logo img {
+        height: 38px !important; 
+    }
+
+    header nav {
+        gap: 10px 4px; 
+    }
+
+    header nav a {
+        font-size: 0.82rem;
+        padding: 3px 6px;
+    }
+
     .hero-slideshow {
         height: 280px;
     }
@@ -550,11 +513,23 @@ header nav a.active-link::after {
         height: 10px;
     }
 
-    /* Shrink floating chat button slightly so it doesn't block site text */
+    /* Scaling constraints secure layout consistency for micro mobile interfaces */
     .chat-widget {
-        width: 50px;
-        height: 50px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
         bottom: 15px;
         right: 15px;
+    }
+    
+    .chat-widget svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .chat-box-container {
+        width: calc(100% - 40px);
+        right: 20px;
+        bottom: 80px;
+        height: 380px;
     }
 }
