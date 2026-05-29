@@ -200,7 +200,26 @@ def admin_logout():
 
 @app.route('/support', methods=['GET', 'POST'])
 def support():
-    services = [{"name": "Academic Tutoring & Peer Mentorship", "description": "One-on-one help with core subjects."}]
+    # 🌟 RESTORE THE FULL LIST OF SERVICES FOR THE FRONTEND GRID 🌟
+    services = [
+        {
+            "name": "Academic Tutoring & Peer Mentorship", 
+            "description": "One-on-one help with core subjects like Mathematics, Integrated Science, and English Language."
+        },
+        {
+            "name": "Guidance & Psychological Counseling", 
+            "description": "Confidential personal counseling, emotional check-ins, and stress management workshops."
+        },
+        {
+            "name": "University & Career Placement Support", 
+            "description": "Assistance with university applications, scholarship essays, and career pathway advice."
+        },
+        {
+            "name": "Campus Health & Medical Services", 
+            "description": "24/7 care provided by our campus infirmary staff for student physical wellness."
+        }
+    ]
+    
     if request.method == 'POST':
         s_name = request.form.get('student_name')
         s_email = request.form.get('student_email')
@@ -211,6 +230,7 @@ def support():
         db.session.commit()
         flash("Your support request has been submitted successfully!", "success")
         return redirect(url_for('support'))
+        
     return render_template('support.html', services=services)
 
 @app.route('/api/chat', methods=['POST'])
