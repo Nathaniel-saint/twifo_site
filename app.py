@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash # Added flash import here
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session 
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
 import numpy as np
+from datetime import datetime
+from sentence_transformers import SentenceTransformer, util
 
 app = Flask(__name__)
 
@@ -32,11 +34,24 @@ class Application(db.Model):
     email = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(20), default='Pending')
 
+class SupportRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_name = db.Column(db.String(100), nullable=False)
+    student_email = db.Column(db.String(100), nullable=False)
+    service_type = db.Column(db.String(50), nullable=False) 
+    message = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='Pending')
+
+class NewsPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date_posted = db.Column(db.String(20), nullable=False)
+
 with app.app_context():
     db.create_all()
 
 # --- Semantic AI Setup ---
-from sentence_transformers import SentenceTransformer, util
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def load_knowledge_base():
@@ -53,7 +68,8 @@ knowledge_embeddings = model.encode(knowledge_base, convert_to_tensor=True)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    all_posts = NewsPost.query.order_by(NewsPost.id.desc()).all()
+    return render_template('index.html', posts=all_posts)
 
 @app.route('/about')
 def about():
@@ -64,65 +80,27 @@ def about():
     ]
     return render_template('about.html', faqs=school_faqs)
 
-
 @app.route('/academics')
 def academics():
     departments = [
-        {
-            "id": "dept-science",
-            "name": "Science & Mathematics",
-            "description": "Fostering critical thinking through rigorous experimental learning. Our state-of-the-art laboratory equips students with practical skills in Biology, Chemistry, Physics, and Core/Elective Mathematics."
-        },
-        {
-            "id": "dept-languages",
-            "name": "Languages & Humanities",
-            "description": "Building powerful global communicators. This department oversees training in English Language, Literature, French, and Social Studies, encouraging deep cultural awareness and narrative excellence."
-        },
-        {
-            "id": "dept-it",
-            "name": "Information Technology & Vocational",
-            "description": "Preparing students for a digital future. Covering foundational computing, software packages, introductory programming, visual arts, and home economics workflows."
-        }
+        {"id": "dept-science", "name": "Science & Mathematics", "description": "Fostering critical thinking through rigorous experimental learning."},
+        {"id": "dept-languages", "name": "Languages & Humanities", "description": "Building powerful global communicators."},
+        {"id": "dept-it", "name": "Information Technology & Vocational", "description": "Preparing students for a digital future."}
     ]
-    
     clubs = [
-        {
-            "id": "club-it",
-            "name": "The Tech & Innovation Club",
-            "description": "Where student ideas meet engineering. Members explore software logic, web design layouts, and hardware configurations—frequently hosting school tech exhibitions."
-        },
-        {
-            "id": "club-sports",
-            "name": "Athletics & Sports Society",
-            "description": "Promoting teamwork, leadership, and physiological wellness. Encompasses our championship football team, basketball squad, and track field training schedules."
-        },
-        {
-            "id": "club-creative",
-            "name": "Creative Arts & Debating Club",
-            "description": "Nurturing public speech confidence and artistic flair. Students participate in inter-school debate tournaments, poetry events, and musical production showcases."
-        }
+        {"id": "club-it", "name": "The Tech & Innovation Club", "description": "Where student ideas meet engineering."},
+        {"id": "club-sports", "name": "Athletics & Sports Society", "description": "Promoting teamwork and leadership."},
+        {"id": "club-creative", "name": "Creative Arts & Debating Club", "description": "Nurturing public speech confidence."}
     ]
     return render_template('academics.html', departments=departments, clubs=clubs)
-
 
 @app.route('/alumni')
 def alumni():
     stories = [
-        {
-            "name": "Abena Mansa",
-            "year": "2018",
-            "story": "After graduating from THS, Abena went on to study Medicine at KNUST. She currently works as a resident pediatrician and credits her strong foundation to our science department.",
-            "image_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150"
-        },
-        {
-            "name": "Kwame Boateng",
-            "year": "2015",
-            "story": "Kwame is now a successful software engineer in Accra. He spent his time at THS leading the campus IT club and organizing the school's very first tech exhibition.",
-            "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
-        }
+        {"name": "Abena Mansa", "year": "2018", "story": "Studied Medicine at KNUST.", "image_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150"},
+        {"name": "Kwame Boateng", "year": "2015", "story": "Software Engineer in Accra.", "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"}
     ]
     return render_template('alumni.html', alumni_stories=stories)
-
 
 @app.route('/admissions', methods=['GET', 'POST'])
 def admissions():
@@ -130,94 +108,123 @@ def admissions():
         fname = request.form.get('firstname')
         lname = request.form.get('lastname')
         u_email = request.form.get('email')
-        
         new_app = Application(first_name=fname, last_name=lname, email=u_email)
         db.session.add(new_app)
         db.session.commit()
-        
         return render_template('admissions.html', success=True)
-        
     return render_template('admissions.html', success=False)
 
 
 # --- Secure Admin Panel Dashboard Routes ---
 @app.route('/admin/dashboard')
 def admin_dashboard():
+    url_key = request.args.get('key')
+    if url_key == 'shalom2026':
+        session['is_admin'] = True
+
+    if not session.get('is_admin'):
+        return redirect(url_for('home'))
+        
     all_applications = Application.query.all()
-    return render_template('admin_dashboard.html', applications=all_applications)
+    all_support_requests = SupportRequest.query.all()
+    all_posts = NewsPost.query.order_by(NewsPost.id.desc()).all()
+    
+    return render_template('admin_dashboard.html', applications=all_applications, support_requests=all_support_requests, posts=all_posts)
+
+@app.route('/admin/add_news', methods=['POST'])
+def add_news():
+    if not session.get('is_admin'):
+        return "Unauthorized Access Denied", 403
+    p_title = request.form.get('title')
+    p_content = request.form.get('content')
+    if p_title and p_content:
+        formatted_date = datetime.now().strftime("%B %d, %Y")
+        new_post = NewsPost(title=p_title, content=p_content, date_posted=formatted_date)
+        db.session.add(new_post)
+        db.session.commit()
+        flash("News announcement successfully published to the live public noticeboard!", "success")
+    return redirect(url_for('admin_dashboard', key='shalom2026'))
+
+@app.route('/admin/delete_news/<int:post_id>')
+def delete_news(post_id):
+    if not session.get('is_admin'):
+        return "Unauthorized Access Denied", 403
+    post = NewsPost.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash("Announcement removed from the noticeboard.", "success")
+    return redirect(url_for('admin_dashboard', key='shalom2026'))
 
 @app.route('/admin/update_status/<int:app_id>/<string:new_status>')
 def update_application_status(app_id, new_status):
+    if not session.get('is_admin'):
+        return "Unauthorized Access Denied", 403
     applicant = Application.query.get_or_404(app_id)
-    
     if new_status in ['Approved', 'Declined']:
-        # Update database entry state
         applicant.status = new_status
         db.session.commit()
-        
-        # --- Trigger Automatic Email System ---
         try:
-            msg = Message(
-                subject=f"Admission Application Update - #THS{applicant.id}",
-                recipients=[applicant.email]
-            )
-            
+            msg = Message(subject=f"Admission Application Update - #THS{applicant.id}", recipients=[applicant.email])
             if new_status == 'Approved':
-                msg.body = f"Dear {applicant.first_name} {applicant.last_name},\n\n" \
-                           f"Congratulations! We are pleased to inform you that your admission application to " \
-                           f"Twifo Hemang Shalom School has been APPROVED.\n\n" \
-                           f"Our admissions office will reach out to you within 3 business days with your formal admission " \
-                           f"letter, uniform measurements information, and fee details.\n\n" \
-                           f"Welcome to our vibrant community!\n\n" \
-                           f"Warm regards,\n" \
-                           f"Admissions Board\n" \
-                           f"Twifo Hemang Shalom School"
+                msg.body = f"Dear {applicant.first_name},\n\nYour application has been APPROVED."
             else:
-                msg.body = f"Dear {applicant.first_name} {applicant.last_name},\n\n" \
-                           f"Thank you for your interest in joining Twifo Hemang Shalom School.\n\n" \
-                           f"After careful review of our enrollment capacity limitations for the upcoming term, we regret to " \
-                           f"inform you that we are unable to offer you a spot at this time.\n\n" \
-                           f"We keep all profiles on file for one academic year should any unexpected vacancies arise.\n\n" \
-                           f"We wish you the very best in your academic pursuits.\n\n" \
-                           f"Sincerely,\n" \
-                           f"Admissions Board\n" \
-                           f"Twifo Hemang Shalom School"
-            
+                msg.body = f"Dear {applicant.first_name},\n\nWe regret to inform you we cannot offer you a spot."
             mail.send(msg)
-            print(f"SUCCESS: Notification email successfully dispatched to {applicant.email}")
-            
-            # Flash success message for the admin interface
-            flash(f"Success! Applicant #{applicant.id} ({applicant.first_name}) status set to {new_status} and notification email sent.", "success")
-            
+            flash(f"Success! Applicant #{applicant.id} status set to {new_status} and email sent.", "success")
+        except Exception:
+            flash(f"Database updated to {new_status}, but email delivery failed.", "error")
+    return redirect(url_for('admin_dashboard', key='shalom2026'))
+
+@app.route('/admin/reply_support/<int:request_id>', methods=['POST'])
+def reply_support(request_id):
+    if not session.get('is_admin'):
+        return "Unauthorized Access Denied", 403
+    support_req = SupportRequest.query.get_or_404(request_id)
+    admin_reply = request.form.get('admin_reply')
+    if admin_reply:
+        try:
+            msg = Message(subject=f"Update regarding your {support_req.service_type} Request", recipients=[support_req.student_email])
+            msg.body = f"Dear {support_req.student_name},\n\n{admin_reply}"
+            mail.send(msg)
+            support_req.status = 'Resolved'
+            db.session.commit()
+            flash(f"Reply successfully emailed to {support_req.student_name}!", "success")
         except Exception as e:
-            print(f"ERROR: Database updated, but automated mail dispatch failed: {str(e)}")
-            # Flash error fallback message for the admin interface
-            flash(f"Database updated to {new_status}, but the automated email failed to send. Check system logs.", "error")
-            
-    return redirect(url_for('admin_dashboard'))
+            flash(f"Failed to send email: {str(e)}", "error")
+    return redirect(url_for('admin_dashboard', key='shalom2026'))
 
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin', None)
+    return redirect(url_for('home'))
 
-# --- AI Chat API Endpoint ---
+@app.route('/support', methods=['GET', 'POST'])
+def support():
+    services = [{"name": "Academic Tutoring & Peer Mentorship", "description": "One-on-one help with core subjects."}]
+    if request.method == 'POST':
+        s_name = request.form.get('student_name')
+        s_email = request.form.get('student_email')
+        s_type = request.form.get('service_type')
+        s_msg = request.form.get('message')
+        new_request = SupportRequest(student_name=s_name, student_email=s_email, service_type=s_type, message=s_msg)
+        db.session.add(new_request)
+        db.session.commit()
+        flash("Your support request has been submitted successfully!", "success")
+        return redirect(url_for('support'))
+    return render_template('support.html', services=services)
+
 @app.route('/api/chat', methods=['POST'])
 def chat_api():
     user_data = request.json
     user_message = user_data.get('message', '').strip()
     if not user_message:
         return jsonify({"reply": "I didn't catch that."})
-    
-    greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon']
-    if user_message.lower() in greetings:
-        return jsonify({"reply": "Hello! I am the THS School AI Assistant. Ask me anything about our admissions, boarding, hours, or location!"})
-
+    if user_message.lower() in ['hello', 'hi']:
+        return jsonify({"reply": "Hello! I am the THS School AI Assistant."})
     query_embedding = model.encode(user_message, convert_to_tensor=True)
     cos_scores = util.cos_sim(query_embedding, knowledge_embeddings)[0]
     best_match_idx = int(np.argmax(cos_scores.cpu().numpy()))
-    
-    if cos_scores[best_match_idx].item() > 0.35:
-        ai_reply = knowledge_base[best_match_idx]
-    else:
-        ai_reply = "I'm sorry, I couldn't find a direct answer in our database. Please contact our administration via email at info@twifoshalomschool.edu."
-        
+    ai_reply = knowledge_base[best_match_idx] if cos_scores[best_match_idx].item() > 0.35 else "Please email admin."
     return jsonify({"reply": ai_reply})
 
 if __name__ == '__main__':

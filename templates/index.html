@@ -2,22 +2,19 @@
 
 {% block content %}
 <div class="hero-slideshow">
-    
-    <div class="slide active" style="background-image: url('{{ url_for('static', filename='images/slide1.jpg') }}');">
+    <div class="slide active" style="background-image: url('{{ url_for('static', filename='images/logo.jpeg') }}');">
         <div class="gallery-overlay">
             <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">DISCOVER OUR VIBRANT COMMUNITY</h1>
             <p>Fostering academic excellence and holistic child development.</p>
         </div>
     </div>
-
     <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide2.jpeg') }}');">
         <div class="gallery-overlay">
             <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">JOIN US FOR THE VIBRANT SEMESTER</h1>
             <p>Explore our diverse extracurricular events, clubs, and sports programs.</p>
         </div>
     </div>
-
-    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide3.jpg') }}');">
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='images/slide1.png') }}');">
         <div class="gallery-overlay">
             <h1 style="margin: 0 0 10px 0; letter-spacing: 1px;">JOIN US FOR THE NEXT SEMESTER</h1>
             <p>Admissions are currently open. Apply online today to secure a spot.</p>
@@ -34,25 +31,50 @@
     </div>
 </div>
 
-<section style="padding: 50px 20px; text-align: center; max-width: 800px; margin: 0 auto;">
-    <h2 style="color: var(--color-blue); font-size: 2rem;">PRESIDENT'S MESSAGE</h2>
-    <p style="line-height: 1.8; color: #444;">
-        Welcome to Twifo Hemang Shalom School. We believe in providing an environment where students are inspired to learn, grow, and lead. Our dedicated faculty members ensure that every child's unique potential is discovered and nurtured.
-    </p>
+<section style="padding: 50px 20px 20px 20px; max-width: 900px; margin: 0 auto;">
+    <div style="background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-left: 6px solid var(--color-gold); text-align: left;">
+        <h2 style="color: var(--color-blue); font-size: 2.2rem; margin-top: 0; margin-bottom: 25px; letter-spacing: 0.5px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-transform: uppercase;">President's Message</h2>
+        <p style="line-height: 1.8; color: #334155; font-size: 1.1rem; margin-bottom: 20px; font-weight: 500;">Welcome to Twifo Hemang Shalom School.</p>
+        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 20px;">At the core of everything we do is our foundational belief: <strong style="color: var(--color-blue);">Nurturing for Excellence</strong>. We understand that true excellence is not achieved by chance; it is carefully cultivated. That is why we are dedicated to providing a serene, inspiring, and rigorous environment where students feel safe to discover their unique strengths, challenge their minds, and step into their potential as future leaders.</p>
+        <p style="line-height: 1.8; color: #334155; font-size: 1.05rem; margin-bottom: 25px;">Our exceptional faculty members do more than teach, they mentor, guide, and inspire. By balancing strong academic fundamentals with creative extracurricular endeavors, we ensure that every child leaves our halls prepared to make a meaningful impact on the global stage.</p>
+        <p style="line-height: 1.8; color: var(--color-blue); font-size: 1.1rem; font-style: italic; font-weight: 600; margin-bottom: 0; background: #f8fafc; padding: 15px 20px; border-radius: 6px; border-right: 3px solid var(--color-gold);">"Thank you for trusting us with your child's educational journey. Together, let us cultivate a generation driven by character, wisdom, and exceptional achievement."</p>
+    </div>
+</section>
+
+<section style="padding: 30px 20px 60px 20px; max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 15px; border-bottom: 3px solid var(--color-gold); padding-bottom: 10px; margin-bottom: 35px;">
+        <span style="font-size: 1.8rem;">📢</span>
+        <h2 style="color: var(--color-blue); font-size: 1.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Official Campus Noticeboard</h2>
+    </div>
+
+    {% if not posts %}
+        <div style="text-align: center; background: #f8fafc; border: 2px dashed #e2e8f0; padding: 40px 20px; border-radius: 12px;">
+            <p style="color: #64748b; font-style: italic; font-size: 1.05rem; margin: 0;">There are no active notices or updates posted for today. Check back soon!</p>
+        </div>
+    {% else %}
+        <div style="display: flex; flex-direction: column; gap: 25px;">
+            {% for post in posts %}
+                <div style="background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; padding: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px dashed #f1f5f9; padding-bottom: 10px;">
+                        <h3 style="color: var(--color-blue); margin: 0; font-size: 1.25rem; font-weight: 700;">{{ post.title }}</h3>
+                        <span style="background: #f1f5f9; color: #475569; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; font-weight: bold; white-space: nowrap;">📅 {{ post.date_posted }}</span>
+                    </div>
+                    <p style="color: #334155; line-height: 1.7; margin: 0; font-size: 1rem; white-space: pre-line;">{{ post.content }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </section>
 
 <script>
     let currentSlideIndex = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
-    let slideInterval = setInterval(autoSlide, 5000); // Changes image every 5 seconds
+    let slideInterval = setInterval(autoSlide, 5000);
 
     function updateSlides() {
-        // Remove active class from all slides and dots
         slides.forEach(slide => slide.classList.remove('active'));
         dots.forEach(dot => dot.classList.remove('active'));
-
-        // Add active class to current selection
         slides[currentSlideIndex].classList.add('active');
         dots[currentSlideIndex].classList.add('active');
     }
@@ -60,12 +82,8 @@
     function changeSlide(direction) {
         resetTimer();
         currentSlideIndex += direction;
-        
-        if (currentSlideIndex >= slides.length) {
-            currentSlideIndex = 0;
-        } else if (currentSlideIndex < 0) {
-            currentSlideIndex = slides.length - 1;
-        }
+        if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+        else if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
         updateSlides();
     }
 
@@ -82,7 +100,7 @@
 
     function resetTimer() {
         clearInterval(slideInterval);
-        slideInterval = setInterval(autoSlide, 5000); // Restarts countdown on user interaction
+        slideInterval = setInterval(autoSlide, 5000);
     }
 </script>
 {% endblock %}

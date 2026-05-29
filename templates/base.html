@@ -5,46 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twifo Hemang Shalom School</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/logo.jpeg') }}">
 </head>
 <body>
 
     <header>
         <div class="logo">
-    <a href="/">
-        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Twifo Hemang Shalom School Logo" style="height: 50px; width: auto; display: block;">
-    </a>
-</div>
-<nav>
-    <a href="{{ url_for('home') }}" 
-       class="{% if request.path == '/' %}active-link{% endif %}">
-       Home
-    </a>
-    
-    <a href="{{ url_for('about') }}" 
-       class="{% if request.path == '/about' %}active-link{% endif %}">
-       About Us
-    </a>
-    
-    <a href="{{ url_for('academics') }}" 
-       class="{% if request.path == '/academics' %}active-link{% endif %}">
-       Academics
-    </a>
-    
-    <a href="{{ url_for('admissions') }}" 
-       class="{% if request.path == '/admissions' %}active-link{% endif %}">
-       Admissions
-    </a>
-    
-    <a href="{{ url_for('alumni') }}" 
-       class="{% if request.path == '/alumni' %}active-link{% endif %}">
-       Alumni
-    </a>
-    
-    <a href="{{ url_for('admin_dashboard') }}" 
-       class="{% if request.path == '/admin/dashboard' %}active-link{% endif %}">
-       Admin Control
-    </a>
-</nav>
+            <a href="/">
+                <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Twifo Hemang Shalom School Logo" style="height: 50px; width: auto; display: block;">
+            </a>
+        </div>
+        <nav>
+            <a href="{{ url_for('home') }}" class="{% if request.path == '/' %}active-link{% endif %}">Home</a>
+            <a href="{{ url_for('about') }}" class="{% if request.path == '/about' %}active-link{% endif %}">About Us</a>
+            <a href="{{ url_for('academics') }}" class="{% if request.path == '/academics' %}active-link{% endif %}">Academics</a>
+            <a href="{{ url_for('admissions') }}" class="{% if request.path == '/admissions' %}active-link{% endif %}">Admissions</a>
+            <a href="{{ url_for('alumni') }}" class="{% if request.path == '/alumni' %}active-link{% endif %}">Alumni</a>
+            <a href="{{ url_for('support') }}" class="{% if request.path == '/support' %}active-link{% endif %}">Student Support</a>
+
+            {% if session.get('is_admin') %}
+                <a href="{{ url_for('admin_dashboard') }}" class="{% if request.path == '/admin/dashboard' %}active-link{% endif %}">
+                    Admin Control
+                </a>
+                <a href="{{ url_for('admin_logout') }}" style="color: #ff6b6b; margin-left: 15px; text-decoration: none; font-weight: bold;">
+                    Exit Admin
+                </a>
+            {% endif %}
+        </nav>
     </header>
 
     <main>
