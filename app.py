@@ -316,16 +316,43 @@ def support():
 
 @app.route('/api/chat', methods=['POST'])
 def chat_api():
-    user_data = request.json
+    user_data = request.json or {}
     user_message = user_data.get('message', '').strip()
+    
+    # 1. Catch missing or blank messages safely
     if not user_message:
-        return jsonify({"reply": "I didn't catch that."})
-    if user_message.lower() in ['hello', 'hi']:
-        return jsonify({"reply": "Hello! I am the THS School AI Assistant."})
-    query_embedding = model.encode(user_message, convert_to_tensor=True)
-    cos_scores = util.cos_sim(query_embedding, knowledge_embeddings)[0]
-    best_match_idx = int(np.argmax(cos_scores.cpu().numpy()))
-    ai_reply = knowledge_base[best_match_idx] if cos_scores[best_match_idx].item() > 0.35 else "Please email admin."
+        return jsonify({"reply": "I didn't catch that. Could you please rephrase your question?"})
+    
+    # 2. Expanded lowercase conversational greeting checks
+    greetings = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening']
+    if user_message.lower().rstrip('!?.') in greetings:
+        return jsonify({"reply": "Hello! I am the Twifo Hemang Shalom School AI Assistant. How can I help you today?"})
+        
+    # 3. Crash protection check to ensure the knowledge base loaded correctly
+    if not knowledge_base or len(knowledge_embeddings) == 0:
+        return jsonify({"reply": "Our school information database is currently undergoing maintenance. Please reach out directly via email to admin."})
+
+    try:
+        # 4. Generate query vector matching arrays
+        query_embedding = model.encode(user_message, convert_to_tensor=True)
+        cos_scores = util.cos_sim(query_embedding, knowledge_embeddings)[0]
+        
+        # 5. Safely isolate the highest scoring vector index
+        scores_numpy = cos_scores.cpu().numpy()
+        best_match_idx = int(np.argmax(scores_numpy))
+        highest_score = float(scores_numpy[best_match_idx])
+        
+        # 6. Apply your semantic confidence threshold check (0.35)
+        if highest_score > 0.35:
+            ai_reply = knowledge_base[best_match_idx]
+        else:
+            ai_reply = "I'm sorry, I couldn't find a direct answer to that in our school database. Please email our administration office or visit us during working hours for assistance."
+            
+    except Exception as e:
+        # Fallback logging to ensure the backend app never crashes live
+        print(f"Chat API Processing Error: {str(e)}")
+        ai_reply = "I'm having trouble retrieving that information right now. Please try again or email admin."
+
     return jsonify({"reply": ai_reply})
 
 if __name__ == '__main__':
